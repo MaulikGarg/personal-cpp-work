@@ -12,6 +12,7 @@
                 "-Wall",
                 "-Wextra",
                 "-Wuninitialized",
+                "-std=c++20",
                 "-Wconversion", 
                 "-ggdb",
                 "${file}",
