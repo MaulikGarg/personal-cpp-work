@@ -1,7 +1,9 @@
 #include<iostream>
 using namespace std;
 
-// #define OTHER_METHOD 1
+//#define WHILE_METHOD 1
+//#define OTHER_METHOD 1
+
 #ifdef OTHER_METHOD
 int printbinarydigit(int x, int numberMax){
     cout << x/numberMax;
@@ -11,18 +13,24 @@ int printbinarydigit(int x, int numberMax){
 
 int main()
 {
+    
+    int maxNumber = 128; 
+    cout << "Enter a number less than " << 2*maxNumber << endl; 
     int x{};
-    cout << "Enter a number: ";
     cin >> x;
     cout << "The number you entered is: ";
 
-    for (int maxNumber = 128; maxNumber > 0; maxNumber/=2)
+    #ifdef WHILE_METHOD
+    int counter{1};
+    while (maxNumber > 0)
     {
-        cout << x/maxNumber;
-        x%=maxNumber;
-        if (maxNumber == 16) cout << " ";
+        cout << x / maxNumber;
+        x %= maxNumber;
+        if (counter++ % 4 == 0) cout << " ";  
+        maxNumber /= 2;
     }
-    
+    #endif
+
     #ifdef OTHER_METHOD
     x = printbinarydigit(x, 128);
     x = printbinarydigit(x, 64);
