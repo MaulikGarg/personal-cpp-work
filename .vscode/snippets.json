@@ -1,0 +1,19 @@
+{
+	"cpp snippets": {
+		"prefix": "boilerplate",
+		"body": [
+			"#include<iostream>",
+			"#include<string>",
+			"#include<string_view>",
+			"",
+			"using namespace std;",
+			"",
+			"int main()",
+			"{",
+			"\n\t$1",
+			"\n\treturn 0;",
+			"}"
+		],
+		"description": "to produce the basic snippet for cpp"
+	}
+}
