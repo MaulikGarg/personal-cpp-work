@@ -7,12 +7,14 @@
 1) function to check if 2 doubles are equal using relative epsilon
 2) function to check if 2 doubles are equal using absolute epsilon
 3) function to check if 2 doubles are equal using combination of above 2 functions
+4) Sieve of Eratosthenes algorithm to get prime number upto n given number -> https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Pseudocode
 
 */
 
 //#define ONE
 //#define TWO
 //#define THREE
+//#define FOUR
 
 
 #ifdef ONE
@@ -74,5 +76,26 @@ constexpr bool approximatelyEqualAbsRel(double a, double b, double absEpsilon, d
     // Otherwise fall back to Knuth's algorithm
     return approximatelyEqualRel(a, b, relEpsilon);
 }
+
+#endif
+
+
+#ifdef FOUR
+
+/*Sieve of Eratosthenes algorithm to get prime number upto n given number*/
+constexpr int kMaxNumber {true};
+    vector<bool> primes (kMaxNumber, 100);
+    
+    //https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Pseudocode
+    for (int i = 2; i*i <= kMaxNumber; i++)
+    {
+        if(primes[i]){
+            for (int j = i*i; j < kMaxNumber; j+=i)
+            {
+                primes[j] = false;
+            }
+            
+        }
+    }
 
 #endif
