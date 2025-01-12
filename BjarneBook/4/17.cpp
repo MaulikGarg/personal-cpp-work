@@ -8,23 +8,22 @@ using namespace std;
 
 int main()
 {
-    vector<int> numbers;
+    vector<string> values{};
 
-    cout << "Enter +ve numbers: ";
-    for (int num; cin >> num;)
-    {
-        numbers.push_back(num);
-    }
+    string input{};
+     while (cin >> input)
+     {
+         values.push_back(input);
+     }
 
-    sort(numbers.begin(), numbers.end());
-
-    int mode{numbers[0]};
+    sort(values.begin(), values.end());
+    string_view mode{values[0]};
     int modeOccuredCount{};
     int currentCounter{1};
 
-    for (int i = 1; i < numbers.size(); i++)
+    for (int i = 1; i < values.size(); i++)
     {
-        if (numbers[i] == numbers[i - 1])
+        if (values[i] == values[i - 1])
         {
             currentCounter++;
         }
@@ -32,18 +31,17 @@ int main()
         {
             if (currentCounter > modeOccuredCount)
             {
-                mode = numbers[i - 1];
+                mode = values[i - 1];
                 modeOccuredCount = currentCounter;
             }
-            currentCounter = 0;
+            currentCounter = 1;
         }
     }
     if (currentCounter > modeOccuredCount)
     {
-        mode = numbers[numbers.size() - 1];
+        mode = values[values.size() - 1];
         modeOccuredCount = currentCounter;
     }
-
     cout << "Mode is: " << mode;
 
     return 0;
