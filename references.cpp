@@ -10,6 +10,12 @@
 
 */
 
+//#define ONE
+//#define TWO
+//#define THREE
+
+
+#ifdef ONE
 
 /*function to check if 2 doubles are equal using relative epsilon*/
 /*Knuth's algorithm*/
@@ -22,8 +28,11 @@ bool approximatelyEqualRel(double a, double b, double relEpsilon)
 	return (std::abs(a - b) <= (std::max(std::abs(a), std::abs(b)) * relEpsilon));
 }
 
+#endif
 
 
+
+#ifdef TWO
 
 /*function to check if 2 doubles are equal using absolute epsilon*/
 
@@ -36,9 +45,12 @@ bool approximatelyEqualAbs(double a, double b, double absEpsilon)
     return std::abs(a - b) <= absEpsilon;
 }
 
+#endif
 
 
 
+
+#ifdef THREE
 
 /*function to check if 2 doubles are equal using combination of above 2 functions*/
 
@@ -63,3 +75,4 @@ constexpr bool approximatelyEqualAbsRel(double a, double b, double absEpsilon, d
     return approximatelyEqualRel(a, b, relEpsilon);
 }
 
+#endif
