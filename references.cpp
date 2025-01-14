@@ -8,14 +8,14 @@
 2) function to check if 2 doubles are equal using absolute epsilon
 3) function to check if 2 doubles are equal using combination of above 2 functions
 4) Sieve of Eratosthenes algorithm to get prime number upto n given number -> https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Pseudocode
-
+5) Ignoring all buffer using cin.
 */
 
 //#define ONE
 //#define TWO
 //#define THREE
 //#define FOUR
-
+//#define FIVE
 
 #ifdef ONE
 
@@ -98,4 +98,14 @@ constexpr int kMaxNumber {true};
         }
     }
 
+#endif
+
+
+#ifdef FIVE
+#include <limits> // for std::numeric_limits
+
+void ignoreLine()
+{
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
 #endif
