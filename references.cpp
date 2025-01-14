@@ -112,6 +112,5 @@ bool hasUnextractedInput()
 if (hasUnextractedInput())
         {
             ignoreLine(); // remove extraneous input
-            continue;
         }
 #endif
