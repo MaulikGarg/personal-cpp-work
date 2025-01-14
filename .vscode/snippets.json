@@ -1,6 +1,20 @@
 {
-	"cpp snippets": {
-		"prefix": "boilerplate",
+	"basic boilerplate": {
+		"prefix": "simpleBP",
+		"body": [
+			"#include<iostream>",
+			"using namespace std;",
+			"",
+			"int main()",
+			"{",
+			"\t$1",
+			"\n\treturn 0;",
+			"}"
+		],
+		"description": "has iostream and a main."
+	},
+	"including boilerplate": {
+		"prefix": "heavyBP",
 		"body": [
 			"#include<iostream>",
 			"#include<string>",
@@ -18,6 +32,6 @@
 			"\n\treturn 0;",
 			"}"
 		],
-		"description": "to produce the basic snippet for cpp"
+		"description": "has basic libraries which may be needed."
 	}
 }
