@@ -32,8 +32,6 @@ bool approximatelyEqualRel(double a, double b, double relEpsilon)
 
 #endif
 
-
-
 #ifdef TWO
 
 /*function to check if 2 doubles are equal using absolute epsilon*/
@@ -48,9 +46,6 @@ bool approximatelyEqualAbs(double a, double b, double absEpsilon)
 }
 
 #endif
-
-
-
 
 #ifdef THREE
 
@@ -79,7 +74,6 @@ constexpr bool approximatelyEqualAbsRel(double a, double b, double absEpsilon, d
 
 #endif
 
-
 #ifdef FOUR
 
 /*Sieve of Eratosthenes algorithm to get prime number upto n given number*/
@@ -100,7 +94,6 @@ constexpr int kMaxNumber {true};
 
 #endif
 
-
 #ifdef FIVE
 #include <limits> // for std::numeric_limits
 
@@ -108,4 +101,17 @@ void ignoreLine()
 {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
+
+//better paired with:
+bool hasUnextractedInput()
+{
+    return !std::cin.eof() && std::cin.peek() != '\n';
+}
+
+//example:
+if (hasUnextractedInput())
+        {
+            ignoreLine(); // remove extraneous input
+            continue;
+        }
 #endif
