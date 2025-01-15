@@ -142,8 +142,45 @@ try
         cout << "Success!\n";
     */
 
-   //21
-   
+    // 21
+    /*
+    int x = 2;
+    double d = 9.0 / (x);
+    if (d == 2 * x + 0.5)
+        cout << "Success!\n";
+    */
+
+    // 22
+    /*
+    string s = "Success!\n";
+    for (int i = 0; i < s.size(); ++i)
+        cout << s[i];
+    */
+
+    // 23
+    /*
+    int i = 0;
+    int j = 9;
+    while (i < 10)
+        ++i;
+    if (j < i)
+        cout << "Success!\n";
+    */
+
+    // 24
+    /*
+    int x = 4;
+    double d = 9.0 / (x-2);
+    if (d = 2 * x + 0.5)
+        cout << "Success!\n";
+    */
+
+   //25
+   /*
+   cout << "Success!\n";
+   */
+
+  
     return 0;
 }
 catch (exception &e)
