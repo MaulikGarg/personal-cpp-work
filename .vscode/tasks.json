@@ -14,7 +14,7 @@
                 "-Wshadow",
                 "-Wuninitialized",
                 "-std=c++23",
-                "-Wconversion",
+                //"-Wconversion",
                 "-ggdb",
                 "${file}",
                 "-o",
