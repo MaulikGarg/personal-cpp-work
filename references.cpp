@@ -9,6 +9,7 @@
 3) function to check if 2 doubles are equal using combination of above 2 functions
 4) Sieve of Eratosthenes algorithm to get prime number upto n given number -> https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Pseudocode
 5) Ignoring all buffer using cin.
+6)
 */
 
 //#define ONE
@@ -16,6 +17,7 @@
 //#define THREE
 //#define FOUR
 //#define FIVE
+//#define SIX
 
 #ifdef ONE
 
@@ -134,4 +136,7 @@ bool hasUnextractedInput()
         if(!clearFailedExtraction()) ignoreLine(); //<- this statement runs when extraction fails. it clears the stream.
     }
     
+#endif
+
+#ifdef SIX
 #endif
