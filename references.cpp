@@ -103,7 +103,8 @@ void ignoreLine()
 {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
-// returns true if extraction failed, false otherwise
+
+// if(clearFailedExtraction()) then it will change cin state and clear bad input. else it will just clear bad input anyway.
 bool clearFailedExtraction()
 {
     // Check for failed extraction
@@ -133,7 +134,8 @@ bool hasUnextractedInput()
 //example:
     while(1){
         cin >> someDouble;
-        if(!clearFailedExtraction()) ignoreLine(); //<- this statement runs when extraction fails. it clears the stream.
+        //when extraction succeeds clear input, if fails then it will also do cin flipping inside the function itself.
+        if(!clearFailedExtraction()) ignoreLine();
     }
     
 #endif
