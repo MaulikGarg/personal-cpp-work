@@ -1,3 +1,4 @@
+#include "inputClear.h"
 #include "setFuncs.h"
 #include "gameParameters.h"
 #include <iostream>
@@ -8,6 +9,7 @@ using std::cout;
 
 using namespace numberGame;
 using namespace gameparameters;
+using namespace inputclear;
 
 void gameplay();
 
@@ -69,6 +71,8 @@ void gameplay()
         // printing input
         printSet(userInput);
         cout << "\nRight number and position: " << correctPosition << " \nRight number wrong position: " << correctDigit << '\n';
+
+        if(hasUnextractedInput()) ignoreLine();
     }
 }
 
