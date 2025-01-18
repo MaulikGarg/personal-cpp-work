@@ -15,15 +15,13 @@ void gameplay();
 
 int main()
 {
+    bool replay{true};
     do
     {
         gameplay();
-        cout << "\nDo you want to replay?";
-        char reply{};
-        cin >> reply;
-        if (reply == 'n')
-            break;
-    } while (1);
+        cout << "\nDo you want to replay? (enter 0 to exit)";
+        cin >> replay;
+    } while (replay);
 
     closeGame();
 
@@ -36,7 +34,7 @@ void gameplay()
 
     while (true)
     {
-        cout << "enter your 4 diff integer digit guess: ";
+        cout << "Enter your 4 diff integer digit guess: ";
 
         set<char> userInput = getSet(numbers);
         int correctDigit{0};

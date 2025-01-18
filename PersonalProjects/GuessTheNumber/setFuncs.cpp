@@ -32,6 +32,8 @@ namespace numberGame
             std::cin >> input;
             if (input == 't')
                 printSet(numbers); // only for testing
+            if (input == 'e')
+                closeGame(); //closes game
             if (std::cin.eof())
                 closeGame();
             userInput.insert(input);
