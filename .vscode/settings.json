@@ -60,6 +60,8 @@
         "cstdarg": "cpp",
         "print": "cpp",
         "ranges": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp"
     }
 }

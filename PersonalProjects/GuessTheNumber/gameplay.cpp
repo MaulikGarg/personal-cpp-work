@@ -1,29 +1,15 @@
-/* WIP
-note: using an ordered set for now, limits gameplay but easier to implement, change to unordered set later.
-*/
-
+#include "setFuncs.h"
+#include "gameParameters.h"
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <set>
-#include <limits>
-#include "../libraries/random.h"
 
-namespace gameparameters
-{
-    // maximum numbers for the game, cannot be more than 10. recommended is <= 6
-    constexpr int numberCount{4};
-}
+using std::set;
+using std::cin;
+using std::cout;
 
-using namespace std;
+using namespace numberGame;
 using namespace gameparameters;
 
-auto getNumberSet() -> set<char>; //returns the randomized n numbers
-void printSet(set<char> funcSetTemporary);
-void err(string errorstring);
 void gameplay();
-bool clearFailedExtraction();
-void ignoreLine();
 
 int main()
 {
@@ -37,7 +23,7 @@ int main()
             break;
     } while (1);
 
-    cout << "thanks for playing";
+    closeGame();
 
     return 0;
 }
@@ -45,20 +31,12 @@ int main()
 void gameplay()
 {
     set<char> numbers = getNumberSet();
-    
+
     while (true)
     {
         cout << "enter your 4 diff integer digit guess: ";
 
-        set<char> userInput;
-        while (userInput.size() < numberCount)
-        {
-            char input{};
-            cin >> input;
-            if(input == 't') printSet(numbers); //only for testing
-            userInput.insert(input);
-        }
-
+        set<char> userInput = getSet(numbers);
         int correctDigit{0};
         int correctPosition{0};
 
@@ -73,16 +51,16 @@ void gameplay()
             if not, checks if the vector even has a generated number.*/
 
             if (*it_user == *it_generated)
-                correctDigit++;
-            else if (userInput.count(*it_generated))
                 correctPosition++;
+            else if (userInput.count(*it_generated))
+                correctDigit++;
 
             // incrementing the iterator so it moves to the next element
             it_user++;
             it_generated++;
         }
 
-        if (correctDigit == numberCount)
+        if (correctPosition == numberCount)
         {
             cout << "you win!";
             break;
@@ -94,18 +72,4 @@ void gameplay()
     }
 }
 
-auto getNumberSet() -> set<char>
-{
-    // original computer set to store the generated random numbers
-    set<char> numbers;
-    while (numbers.size() < numberCount)
-    {
-        numbers.insert(static_cast<char>(Random::get(0, 9) + '0'));
-    }
-    return numbers;
-}
 
-void printSet(set<char> funcSetTemporary){
-    for(char i: funcSetTemporary)
-        cout << i << ' ';
-}
