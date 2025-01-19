@@ -91,8 +91,8 @@ Token Token_stream::get()
 
     switch (ch)
     {
-    case ';': // for "print"
-    case 'q': // for "quit"
+    case '=': // for "print"
+    case 'x': // for "quit"
     case '(':
     case ')':
     case '+':
@@ -147,8 +147,8 @@ double primary()
     }
     case '8':           // we use '8' to represent a number
         return t.value; // return the number's value
-    case ';':           // for "print"
-    case 'q':
+    case '=':           // for "print"
+    case 'x':
         return t.kind;
     default:
         error("primary expected");
@@ -219,14 +219,16 @@ double expression()
 int main()
 try
 {
+    cout << "Welcome to our simple calculator. \nPlease enter expressions using floating-point numbers.";
+    cout << "Use + - * / for operations, = for result and q for exitting.";
     double val{0};
     while (cin)
     {
         Token t = ts.get();
 
-        if (t.kind == 'q')
-            break;         // 'q' for quit
-        if (t.kind == ';') // ';' for "print now"
+        if (t.kind == 'x')
+            break;         // 'x' for quit
+        if (t.kind == '=') // '=' for "print now"
             cout << "=" << val << '\n';
         else
             ts.putback(t);
