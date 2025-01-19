@@ -63,5 +63,6 @@
         "bitset": "cpp",
         "set": "cpp",
         "unordered_set": "cpp"
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true
 }
