@@ -1,4 +1,3 @@
-//student.cpp <- file name
 #include <iostream>
 #include <string> //for strings, not char arrays
 using std::string, std::cout;

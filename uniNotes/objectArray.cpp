@@ -1,4 +1,3 @@
-// objectArray.cpp <- file name
 #include<iostream>
 using std::cout;
 
