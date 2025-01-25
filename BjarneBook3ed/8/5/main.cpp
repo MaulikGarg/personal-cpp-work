@@ -90,6 +90,12 @@ public:
     // output operator overload, prints the information on seperate lines
     friend ostream &operator<<(ostream &os, const Book &book);
 
+    //check if book is available, returns true if it is
+    bool isBookAvailable(){ return isAvailable;}
+
+    //get the book's name, for printing reasons
+    string getName(){ return title;}
+
     // flips the book's availability status
     void changeAvailability(bool status){
         isAvailable = status;
@@ -219,12 +225,13 @@ public:
     // makes an attempt to buy a boook
     void checkoutBook(Patron &buyingCustomer, Book &item, Date &transDate);
     // prints the list of every patron that owes money
-    void printDebters();
+    vector<string> printDebters();
 };
 
 // checks if the book and patron are valid, if so, check if patron is in debt, if not, complete transaction
 void Library::checkoutBook(Patron &buyingCustomer, Book &item, Date &transDate)
 {
+    cout << "\nAttempting to check out a book...\n";
     // check if patron exists in record
     {
         bool patronExists{false};
@@ -250,30 +257,28 @@ void Library::checkoutBook(Patron &buyingCustomer, Book &item, Date &transDate)
     // check if patron owes money
     if(buyingCustomer.hasPendingFee()) exit(1);
 
+    //check if book is available or not
+    if(!item.isBookAvailable()) exit(1);
+
     //if the function has survived so far, complete the transaction
     transactionRecords.push_back(Transaction(item, buyingCustomer, transDate));
     //after transaction is pushed, make book unavailable
     item.changeAvailability(false);
+    cout << "Book " << item.getName() << " checked out successfully!\n";
 }
 
-void Library::printDebters(){
+vector<string> Library::printDebters(){
+    vector<string> debters;
     for(auto& i : customers){
         if(i.hasPendingFee()){
-            
+            debters.push_back(i.getName());
         }
     }
+    return debters;
 }
 
 int main()
 {
-    // Book b1("123-456-789-x", "my book", "me", Date{Year{2005}, Month::sep, 4}, true, Genre::fiction);
-    // cout << b1;
-    //  Patron rasp("Rasp De Sleif", 69, 420);
-    //  cout << rasp.getName() << '\n';
-    //  cout << rasp.getID() << '\n';
-    //  cout << rasp.getFee() << '\n';
-    //  cout << rasp.hasPendingFee() << '\n';
-    //  rasp.editFee(-420);
-    //  cout << rasp.hasPendingFee() << '\n';
+    
     return 0;
 }
