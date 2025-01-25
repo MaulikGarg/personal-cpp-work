@@ -9,6 +9,11 @@ form n−n−n−x where n is an integer and x is a digit or a letter. Store an 
 6] Add operators for the Book class. Have the == operator check whether the ISBN numbers are
 the same for two books. Have != also compare the ISBN numbers. Have a << print out the
 title, author, and ISBN on separate lines.
+
+7] Create an enumerated type for the Book class called Genre. Hav e the types be fiction, nonfiction, 
+periodical, biography, and children. Give each book a Genre and make appropriate changes to the 
+Book constructor and member functions
+
 */
 
 #include "date.cpp"
@@ -60,6 +65,9 @@ public:
     //overloaded operators to check whether the books are equal or not, just compares their ISBN
     bool operator==(const Book& comapredBook);
     bool operator!=(const Book& comapredBook);
+
+    //output operator overload, prints the information on seperate lines
+    friend ostream& operator<<(ostream& os, const Book& book);
 };
 
 // checks if the input isbn is in format int-int-int-char, where each int is 3 digits
@@ -107,9 +115,18 @@ bool Book::operator!=(const Book& comapredBook){
     return false;
 }
 
+//global output function for pushing Book object to the output buffer
+ostream& operator<<(ostream& os, const Book& book){
+    os << "\nBook Name: " << book.title;
+    os << " , Written by: " << book.authorName;
+    os << "\nAvailibilty status: " << ((book.isAvailable) ? "Yes" : "No");
+    os << "\nISBN: " << book.isbnNumber << " , copyright: " << book.copyright << '\n';
+    return os;
+}
+
 int main()
 {
     Book b1("123-456-789-x","my book","me", Date{Year{2005}, Month::sep, 4}, true);
-    cout << 0;
+    cout << b1;
     return 0;
 }
