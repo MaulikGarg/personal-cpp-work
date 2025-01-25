@@ -29,6 +29,8 @@ the user does, report an error. If not, create a Transaction, and place it in th
 Also write a function that will return a vector that contains the names of all Patrons
 who owe fees.
 
+10] Implement leapyear(int).
+
 */
 
 #include "date.cpp" //including this instead of header for quick exercise attempts
@@ -189,9 +191,7 @@ public:
     // to check if the customer owes any fee or not
     bool hasPendingFee() const
     {
-        if (feeOwed > 0)
-            return true;
-        return false;
+        return feeOwed > 0;
     }
 };
 
@@ -279,6 +279,6 @@ vector<string> Library::printDebters(){
 
 int main()
 {
-    
+
     return 0;
 }
