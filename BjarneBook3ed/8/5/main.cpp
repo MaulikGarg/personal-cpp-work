@@ -19,13 +19,13 @@ and library fees (if owed). Have functions that access this data, as well as a f
 the fee of the user. Hav e a helper function that returns a Boolean (bool) depending on
 whether or not the user owes a fee.
 
-9] Create a Library class. Include vectors of Books and Patrons. Include a struct called Transaction to 
+9] Create a Library class. Include vectors of Books and Patrons. Include a struct called Transaction to
 record when a book is checked out. Have it include a Book, a Patron, and a Date.
 Make a vector of Transactions to keep a record of which books are out. Create functions to
 add books to the library, add patrons to the library, and check out books. Whenever a user
 checks out a book, have the library make sure that both the user and the book are in the
 library. If they aren’t, report an error. Then check to make sure that the user owes no fees. If
-the user does, report an error. If not, create a Transaction, and place it in the vector of Transactions. 
+the user does, report an error. If not, create a Transaction, and place it in the vector of Transactions.
 Also write a function that will return a vector that contains the names of all Patrons
 who owe fees.
 
@@ -89,6 +89,11 @@ public:
 
     // output operator overload, prints the information on seperate lines
     friend ostream &operator<<(ostream &os, const Book &book);
+
+    // flips the book's availability status
+    void changeAvailability(bool status){
+        isAvailable = status;
+    }
 };
 
 // checks if the input isbn is in format int-int-int-char, where each int is 3 digits
@@ -168,15 +173,15 @@ public:
     {
     }
     // functions to READ the information
-    string getName() { return name; }
+    string getName() const { return name; }
     int getID() { return libraryCardNumber; }
-    double getFee() { return feeOwed; }
+    double getFee() const { return feeOwed; }
 
     // function to edit the fee the customer owes
     void editFee(double inputFee) { feeOwed += inputFee; }
 
     // to check if the customer owes any fee or not
-    bool hasPendingFee()
+    bool hasPendingFee() const
     {
         if (feeOwed > 0)
             return true;
@@ -184,44 +189,91 @@ public:
     }
 };
 
-//Records a transcation which has happened, stores its date
-struct Transaction{
+// Records a transcation which has happened, stores its date
+struct Transaction
+{
     Book name;
     Patron customerName;
     Date transactionDate;
 
-    Transaction(const Book& b, const Patron& p, const Date& d)
+    Transaction(const Book &b, const Patron &p, const Date &d)
         : name(b), customerName(p), transactionDate(d) {}
 };
 
-//primary library class to keep a record of the patrons and the books
-class Library{
-    private:
-        //stores every book currently available in the library
-        vector<Book> bookshelf;
-        //stores a list of valid customers, i.e, have a valid id
-        vector<Patron> customers;
+// primary library class to keep a record of the patrons and the books
+class Library
+{
+private:
+    // stores every book currently available in the library
+    vector<Book> bookshelf;
+    // stores a list of valid customers, i.e, have a valid id
+    vector<Patron> customers;
+    //stores all the transaction records
+    vector<Transaction> transactionRecords;
 
-    public:
-        //adds a book to the library
-        void addBook(Book inputBook) {bookshelf.push_back(inputBook);}
-        //adds a patron to the library list
-        void addPatron(Patron inputBook) {customers.push_back(inputBook);}
-        //makes an attempt to buy a boook
-        void checkoutBook(Patron buyingCustomer, Book item);
-
+public:
+    // adds a book to the library
+    void addBook(Book inputBook) { bookshelf.push_back(inputBook); }
+    // adds a patron to the library list
+    void addPatron(Patron inputPatron) { customers.push_back(inputPatron); }
+    // makes an attempt to buy a boook
+    void checkoutBook(Patron &buyingCustomer, Book &item, Date &transDate);
+    // prints the list of every patron that owes money
+    void printDebters();
 };
+
+// checks if the book and patron are valid, if so, check if patron is in debt, if not, complete transaction
+void Library::checkoutBook(Patron &buyingCustomer, Book &item, Date &transDate)
+{
+    // check if patron exists in record
+    {
+        bool patronExists{false};
+        for(auto& i : customers){
+            if(i.getName() == buyingCustomer.getName()){
+                patronExists = true;
+                break;
+            }
+        }
+        if (!patronExists)exit(1);
+    }
+    // check if book exists in record
+    {
+        bool bookExists{false};
+        for(auto& i : bookshelf){
+            if(i == item){
+                bookExists = true;
+                break;
+            }
+        }
+        if (!bookExists)exit(1);
+    }
+    // check if patron owes money
+    if(buyingCustomer.hasPendingFee()) exit(1);
+
+    //if the function has survived so far, complete the transaction
+    transactionRecords.push_back(Transaction(item, buyingCustomer, transDate));
+    //after transaction is pushed, make book unavailable
+    item.changeAvailability(false);
+}
+
+void Library::printDebters(){
+    for(auto& i : customers){
+        if(i.hasPendingFee()){
+            
+        }
+    }
+}
 
 int main()
 {
-    //Book b1("123-456-789-x", "my book", "me", Date{Year{2005}, Month::sep, 4}, true, Genre::fiction);
-    //cout << b1;
-    // Patron rasp("Rasp De Sleif", 69, 420);
-    // cout << rasp.getName() << '\n';
-    // cout << rasp.getID() << '\n';
-    // cout << rasp.getFee() << '\n';
-    // cout << rasp.hasPendingFee() << '\n';
-    // rasp.editFee(-420);
-    // cout << rasp.hasPendingFee() << '\n';
+    // Book b1("123-456-789-x", "my book", "me", Date{Year{2005}, Month::sep, 4}, true, Genre::fiction);
+    // cout << b1;
+    //  Patron rasp("Rasp De Sleif", 69, 420);
+    //  cout << rasp.getName() << '\n';
+    //  cout << rasp.getID() << '\n';
+    //  cout << rasp.getFee() << '\n';
+    //  cout << rasp.hasPendingFee() << '\n';
+    //  rasp.editFee(-420);
+    //  cout << rasp.hasPendingFee() << '\n';
     return 0;
 }
