@@ -61,9 +61,9 @@ bool Name_Pairs::operator!=(Name_Pairs& comparedPair) const{
     if (names.size() != comparedPair.names.size()) return true;
     for (int i = 0; i < static_cast<int>(names.size()); i++)
     {
-        if(names[i] == comparedPair.names[i]) return false;
+        if(names[i] != comparedPair.names[i]) return true;
     }
-    return true;
+    return false;
 }
 
 int main()
