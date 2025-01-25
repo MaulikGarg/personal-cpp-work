@@ -1,23 +1,16 @@
-#include<iostream>
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <vector>
 using namespace std;
 
-class Test{
-    private:
-        int code;
-    public:
-        int* getlocation(){
-            return &code;
-        }
-        void display(){
-            cout << code << '\n';
-        }
-};
 
-int main()
+main()
 {
-    Test myTest;
-    int* myPointer = myTest.getlocation();
-    *myPointer = 4;
-    myTest.display();
+    pair<string,int> names;
+    names.first = 5;
+    
+
+
     return 0;
 }
