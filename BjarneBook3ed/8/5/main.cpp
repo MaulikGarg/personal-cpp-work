@@ -1,3 +1,11 @@
+/*This exercise and the next few require you to design and implement a Book class, such as you
+can imagine as part of software for a library. Class Book should have members for the ISBN,
+title, author, and copyright date. Also store data on whether or not the book is checked out.
+Create functions for returning those data values. Create functions for checking a book in and
+Exercises 247
+out. Do simple validation of data entered into a Book; for example, accept ISBNs only of the
+form n−n−n−x where n is an integer and x is a digit or a letter. Store an ISBN as a string*/
+
 #include "date.cpp"
 #include <iostream>
 #include <vector>
@@ -41,21 +49,20 @@ public:
             exit(1);
         };
     }
-    bool isvalidISBN(string &inputisbn);
+    bool isvalidISBN(const string &inputisbn);
 };
 
 // checks if the input isbn is in format int-int-int-char, where each int is 3 digits
-bool Book::isvalidISBN(string &inputisbn)
+bool Book::isvalidISBN(const string &inputisbn)
 {
 
     // check length
     if (inputisbn.length() != 13)
         return false;
 
-    // check ints
-    for (int i = 0; i < 12; i++)
+    // check the isbn itself
+    for (int i = 0; i < 13; i++)
     {
-
         // at hyphen position, check for it and continue loop by 2
         if (i == 3 || i == 7 || i == 11)
         {
