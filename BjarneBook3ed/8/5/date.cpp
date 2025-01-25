@@ -51,3 +51,10 @@ void Date::is_valid(Month mm, int dd){
     if(dd > 31 || dd < 1) exit(1);
     if(static_cast<int>(mm) > 12 || static_cast<int>(mm) < 1) exit(1);
 }
+
+std::ostream &operator<<(std::ostream &os, const Date &date)
+{
+    return os << date.getYear().value << "-"
+              << static_cast<int>(date.getMonth()) << "-"
+              << date.getDay();
+}

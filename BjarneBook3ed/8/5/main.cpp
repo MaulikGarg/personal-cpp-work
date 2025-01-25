@@ -2,7 +2,7 @@
 5] This exercise and the next few require you to design and implement a Book class, such as you
 can imagine as part of software for a library. Class Book should have members for the ISBN,
 title, author, and copyright date. Also store data on whether or not the book is checked out.
-Create functions for returning those data values. Create functions for checking a book in and out. 
+Create functions for returning those data values. Create functions for checking a book in and out.
 Do simple validation of data entered into a Book; for example, accept ISBNs only of the
 form n−n−n−x where n is an integer and x is a digit or a letter. Store an ISBN as a string
 
@@ -10,25 +10,41 @@ form n−n−n−x where n is an integer and x is a digit or a letter. Store an 
 the same for two books. Have != also compare the ISBN numbers. Have a << print out the
 title, author, and ISBN on separate lines.
 
-7] Create an enumerated type for the Book class called Genre. Hav e the types be fiction, nonfiction, 
-periodical, biography, and children. Give each book a Genre and make appropriate changes to the 
+7] Create an enumerated type for the Book class called Genre. Hav e the types be fiction, nonfiction,
+periodical, biography, and children. Give each book a Genre and make appropriate changes to the
 Book constructor and member functions
+
+8] Create a Patron class for the library. The class will have a user’s name, library card number,
+and library fees (if owed). Have functions that access this data, as well as a function to set
+the fee of the user. Hav e a helper function that returns a Boolean (bool) depending on
+whether or not the user owes a fee.
+
+[9] Create a Librar y class. Include vectors of Books and Patrons. Include a struct called Transaction to record when a book is checked out. Have it include a Book, a Patron, and a Date.
+Make a vector of Transactions to keep a record of which books are out. Create functions to
+add books to the library, add patrons to the library, and check out books. Whenever a user
+checks out a book, have the library make sure that both the user and the book are in the
+library. If they aren’t, report an error. Then check to make sure that the user owes no fees. If
+the user does, report an error. If not, create a Transaction, and place it in the vector of Transactions. Also write a function that will return a vector that contains the names of all Patrons
+who owe fees.
 
 */
 
-#include "date.cpp"
+#include "date.cpp" //including this instead of header for quick exercise attempts
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cctype>
 using namespace std;
 
-std::ostream &operator<<(std::ostream &os, const Date &date)
+// enumerated class Genre used by book class to identify and list about a book's genre
+enum class Genre
 {
-    return os << date.getYear().value << "-"
-              << static_cast<int>(date.getMonth()) << "-"
-              << date.getDay();
-}
+    fiction,
+    nonFiction,
+    periodical,
+    biography,
+    children
+};
 
 // main book class for initializing and getting information about a book, (isbn, title, author, date, availability)
 class Book
@@ -44,30 +60,33 @@ private:
     Date copyright;
     // if the book is available in the library
     bool isAvailable;
+    // a book's genre, taken from the enum type
+    Genre genre;
 
 public:
     // constructor getting the necessary information, also checks if input string is valid isbn.
-    Book(string inputisbn, string inputTitle, string inputAuthor, Date inputDate, bool inputAvailability)
+    Book(string inputisbn, string inputTitle, string inputAuthor, Date inputDate, bool inputAvailability, Genre inputGenre)
         : isbnNumber{inputisbn},
           title{inputTitle},
           authorName{inputAuthor},
           copyright{inputDate},
-          isAvailable{inputAvailability}
+          isAvailable{inputAvailability},
+          genre{inputGenre}
     {
         if (!isvalidISBN(inputisbn))
         {
             exit(1);
         };
     }
-    //function prototype, checks if an input ISBN number is valid or not
+    // function prototype, checks if an input ISBN number is valid or not
     bool isvalidISBN(const string &inputisbn);
 
-    //overloaded operators to check whether the books are equal or not, just compares their ISBN
-    bool operator==(const Book& comapredBook);
-    bool operator!=(const Book& comapredBook);
+    // overloaded operators to check whether the books are equal or not, just compares their ISBN
+    bool operator==(const Book &comapredBook);
+    bool operator!=(const Book &comapredBook);
 
-    //output operator overload, prints the information on seperate lines
-    friend ostream& operator<<(ostream& os, const Book& book);
+    // output operator overload, prints the information on seperate lines
+    friend ostream &operator<<(ostream &os, const Book &book);
 };
 
 // checks if the input isbn is in format int-int-int-char, where each int is 3 digits
@@ -87,7 +106,7 @@ bool Book::isvalidISBN(const string &inputisbn)
             if (inputisbn[i] != '-')
                 return false;
         }
-        //at last position, check if it is a letter or digit
+        // at last position, check if it is a letter or digit
         else if (i == 12)
         {
             // check for char
@@ -106,27 +125,73 @@ bool Book::isvalidISBN(const string &inputisbn)
 }
 
 //== and!= overloads checking if the ISBN NUMBERS are equal or not
-bool Book::operator==(const Book& comapredBook){
-    if(isbnNumber == comapredBook.isbnNumber) return true;
+bool Book::operator==(const Book &comapredBook)
+{
+    if (isbnNumber == comapredBook.isbnNumber)
+        return true;
     return false;
 }
-bool Book::operator!=(const Book& comapredBook){
-    if(isbnNumber != comapredBook.isbnNumber) return true;
+bool Book::operator!=(const Book &comapredBook)
+{
+    if (isbnNumber != comapredBook.isbnNumber)
+        return true;
     return false;
 }
 
-//global output function for pushing Book object to the output buffer
-ostream& operator<<(ostream& os, const Book& book){
-    os << "\nBook Name: " << book.title;
+// global output function for pushing Book object to the output buffer
+ostream &operator<<(ostream &os, const Book &book)
+{
+    os << "\n\nBook Name: " << book.title;
     os << " , Written by: " << book.authorName;
+    os << "\nGenre ID: " << static_cast<int>(book.genre);
     os << "\nAvailibilty status: " << ((book.isAvailable) ? "Yes" : "No");
     os << "\nISBN: " << book.isbnNumber << " , copyright: " << book.copyright << '\n';
     return os;
 }
 
+// customer class, has the name, id and fee they owe
+class Patron
+{
+private:
+    // name, uniqueID and fee of the customer
+    string name;
+    int libraryCardNumber;
+    double feeOwed;
+
+public:
+    // constructor function for the customer
+    Patron(string inputName, int inputID, double inputFee) : name{inputName},
+                                                             libraryCardNumber{inputID},
+                                                             feeOwed{inputFee}
+    {
+    }
+    // functions to READ the information
+    string getName() { return name; }
+    int getID() { return libraryCardNumber; }
+    double getFee() { return feeOwed; }
+
+    // function to edit the fee the customer owes
+    void editFee(double inputFee) { feeOwed += inputFee; }
+
+    // to check if the customer owes any fee or not
+    bool hasPendingFee()
+    {
+        if (feeOwed > 0)
+            return true;
+        return false;
+    }
+};
+
 int main()
 {
-    Book b1("123-456-789-x","my book","me", Date{Year{2005}, Month::sep, 4}, true);
-    cout << b1;
+    //Book b1("123-456-789-x", "my book", "me", Date{Year{2005}, Month::sep, 4}, true, Genre::fiction);
+    //cout << b1;
+    // Patron rasp("Rasp De Sleif", 69, 420);
+    // cout << rasp.getName() << '\n';
+    // cout << rasp.getID() << '\n';
+    // cout << rasp.getFee() << '\n';
+    // cout << rasp.hasPendingFee() << '\n';
+    // rasp.editFee(-420);
+    // cout << rasp.hasPendingFee() << '\n';
     return 0;
 }
