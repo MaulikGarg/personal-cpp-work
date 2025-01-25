@@ -19,12 +19,14 @@ and library fees (if owed). Have functions that access this data, as well as a f
 the fee of the user. Hav e a helper function that returns a Boolean (bool) depending on
 whether or not the user owes a fee.
 
-[9] Create a Librar y class. Include vectors of Books and Patrons. Include a struct called Transaction to record when a book is checked out. Have it include a Book, a Patron, and a Date.
+9] Create a Library class. Include vectors of Books and Patrons. Include a struct called Transaction to 
+record when a book is checked out. Have it include a Book, a Patron, and a Date.
 Make a vector of Transactions to keep a record of which books are out. Create functions to
 add books to the library, add patrons to the library, and check out books. Whenever a user
 checks out a book, have the library make sure that both the user and the book are in the
 library. If they aren’t, report an error. Then check to make sure that the user owes no fees. If
-the user does, report an error. If not, create a Transaction, and place it in the vector of Transactions. Also write a function that will return a vector that contains the names of all Patrons
+the user does, report an error. If not, create a Transaction, and place it in the vector of Transactions. 
+Also write a function that will return a vector that contains the names of all Patrons
 who owe fees.
 
 */
@@ -180,6 +182,34 @@ public:
             return true;
         return false;
     }
+};
+
+//Records a transcation which has happened, stores its date
+struct Transaction{
+    Book name;
+    Patron customerName;
+    Date transactionDate;
+
+    Transaction(const Book& b, const Patron& p, const Date& d)
+        : name(b), customerName(p), transactionDate(d) {}
+};
+
+//primary library class to keep a record of the patrons and the books
+class Library{
+    private:
+        //stores every book currently available in the library
+        vector<Book> bookshelf;
+        //stores a list of valid customers, i.e, have a valid id
+        vector<Patron> customers;
+
+    public:
+        //adds a book to the library
+        void addBook(Book inputBook) {bookshelf.push_back(inputBook);}
+        //adds a patron to the library list
+        void addPatron(Patron inputBook) {customers.push_back(inputBook);}
+        //makes an attempt to buy a boook
+        void checkoutBook(Patron buyingCustomer, Book item);
+
 };
 
 int main()
