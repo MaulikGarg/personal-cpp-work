@@ -1,10 +1,15 @@
-/*This exercise and the next few require you to design and implement a Book class, such as you
+/*
+5] This exercise and the next few require you to design and implement a Book class, such as you
 can imagine as part of software for a library. Class Book should have members for the ISBN,
 title, author, and copyright date. Also store data on whether or not the book is checked out.
-Create functions for returning those data values. Create functions for checking a book in and
-Exercises 247
-out. Do simple validation of data entered into a Book; for example, accept ISBNs only of the
-form n−n−n−x where n is an integer and x is a digit or a letter. Store an ISBN as a string*/
+Create functions for returning those data values. Create functions for checking a book in and out. 
+Do simple validation of data entered into a Book; for example, accept ISBNs only of the
+form n−n−n−x where n is an integer and x is a digit or a letter. Store an ISBN as a string
+
+6] Add operators for the Book class. Have the == operator check whether the ISBN numbers are
+the same for two books. Have != also compare the ISBN numbers. Have a << print out the
+title, author, and ISBN on separate lines.
+*/
 
 #include "date.cpp"
 #include <iostream>
@@ -49,7 +54,12 @@ public:
             exit(1);
         };
     }
+    //function prototype, checks if an input ISBN number is valid or not
     bool isvalidISBN(const string &inputisbn);
+
+    //overloaded operators to check whether the books are equal or not, just compares their ISBN
+    bool operator==(const Book& comapredBook);
+    bool operator!=(const Book& comapredBook);
 };
 
 // checks if the input isbn is in format int-int-int-char, where each int is 3 digits
@@ -85,6 +95,16 @@ bool Book::isvalidISBN(const string &inputisbn)
 
     // all checks passed, its a valid isbn
     return true;
+}
+
+//== and!= overloads checking if the ISBN NUMBERS are equal or not
+bool Book::operator==(const Book& comapredBook){
+    if(isbnNumber == comapredBook.isbnNumber) return true;
+    return false;
+}
+bool Book::operator!=(const Book& comapredBook){
+    if(isbnNumber != comapredBook.isbnNumber) return true;
+    return false;
 }
 
 int main()
