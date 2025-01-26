@@ -9,7 +9,7 @@
 3) function to check if 2 doubles are equal using combination of above 2 functions
 4) Sieve of Eratosthenes algorithm to get prime number upto n given number -> https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes#Pseudocode
 5) Ignoring all buffer using cin.
-6)
+6) Zeller's convergence to find day of a year in greogorian calendar.
 */
 
 //#define ONE
@@ -141,4 +141,24 @@ bool hasUnextractedInput()
 #endif
 
 #ifdef SIX
+
+int dayofyear(int d, int m, int y){
+    //uses the zeller's congurence formula 
+    // m is month, 3=march 11=nov..14=feb
+    //adjust jan and feb
+    if(m<3){
+        m+=12;
+        y-=1;
+    }
+    int yearInCentury {y%100};
+    int zeroBasedCentury {y/100}; //integer division intended
+
+    //formula itself
+    double innerBracket = floor((13*(m+1))/5.0);
+    double outerBracket = d+innerBracket+yearInCentury+floor(yearInCentury/4.0)+floor(zeroBasedCentury/4.0) - 2*zeroBasedCentury;
+
+    //+1 adjusts sunday to be at 7 and monday at 1.
+    return (static_cast<int>(outerBracket)%7) + 1;
+}
+
 #endif
