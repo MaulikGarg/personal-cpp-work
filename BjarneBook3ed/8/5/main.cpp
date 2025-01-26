@@ -284,6 +284,7 @@ vector<string> Library::printDebters(){
 
 int main()
 {
-
+    Date d1(Year{2054}, Month::jan, 26);
+    cout << d1.dayOfTheYear();
     return 0;
 }

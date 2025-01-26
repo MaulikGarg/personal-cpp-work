@@ -55,8 +55,11 @@ public:
     // returns the number of days left until the next workday, ranges from 0 to 2.
     int nextWorkday();
 
-    //returns the day of the year.. sunday is 0.. saturday is 6.
+    // returns the day of the year.. sunday is 0.. saturday is 6. uses default val JAN 1
     int dayOfTheYear();
+
+    // returns the number of days it has passed since Jan 1 XXXX
+    int numberOfDays();
 };
 
 // checks if the date is valid by checking month and date availability
@@ -78,7 +81,7 @@ bool Date::isLeapYear()
     return false;
 }
 
-// assumes that
+// assumes that default date is 1st of jan
 int Date::dayOfTheYear()
 {
     // uses the zeller's congurence formula
@@ -98,8 +101,8 @@ int Date::dayOfTheYear()
     double innerBracket = floor((13 * (month + 1)) / 5.0);
     double outerBracket = d + innerBracket + yearInCentury + floor(yearInCentury / 4.0) + floor(zeroBasedCentury / 4.0) - 2 * zeroBasedCentury;
 
-    //0=sunday...4=thursday..6=saturday
-    return (static_cast<int>(outerBracket) % 7);
+    // 0=sunday...4=thursday..6=saturday
+    return (static_cast<int>(outerBracket) % 7) - 1;
 }
 
 std::ostream &operator<<(std::ostream &os, const Date &date)
@@ -107,4 +110,59 @@ std::ostream &operator<<(std::ostream &os, const Date &date)
     return os << date.getYear().value << "-"
               << static_cast<int>(date.getMonth()) << "-"
               << date.getDay();
+}
+
+int Date::nextWorkday()
+{
+    int day{dayOfTheYear()};
+    // if its sunday..monday...thursday, then workday is tomrw
+    if (day < 5)
+        return 0;
+    // if its a friday, workday is in 2 days
+    if (day == 5)
+        return 2;
+    // if its a saturday, workday is in 1 day.
+    if (day == 6)
+        return 1;
+
+    return -1; // indicates error
+}
+int Date::numberOfDays()
+{
+    int month = static_cast<int>(m) - 1;
+    int totalDays{d};
+    bool flip{false}; //while months are less than august, increment odd months by 31, 
+                        //after that, do even ones
+    for (int i = 1; i <= month; i++)
+    {
+        if(flip){
+            //if its flipped, increment even months by 31
+            if(i%2==0) totalDays+=31;
+            else totalDays+=30;
+        } else {
+            //if its unflipped, increment odd months by 31
+            if((i%2!=0)) totalDays +=31;
+            //if even and not feb, add by 30
+            else if(i!=2) totalDays +=30;
+            else{
+                //check if its a leap year, increment by 29 if it is
+                if(isLeapYear()) totalDays +=29;
+                else totalDays +=28;
+            }
+        }
+        if(i==6) flip = true;
+    }
+    return totalDays;
+}
+
+int Date::weekOfTheYear()
+{
+    // first we need to get the day that was on jan 1
+    Date temporary{y, Month::jan, 1};
+    int dayOnJanFirst{temporary.dayOfTheYear()}; // returns 0 if sunday and 6 is saturday..
+    int daysPassed = numberOfDays(); //get the number of the day it currently is in a year
+    int adjustedDays {daysPassed+dayOnJanFirst}; //if jan 1 was not a sunday, add the day number to allign the day with a sunday
+    int weekNumber = (adjustedDays + 6) / 7; //6 is added to make the days fully divisible by 7.
+    return weekNumber;
+    
 }
