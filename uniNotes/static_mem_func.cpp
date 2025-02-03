@@ -16,6 +16,8 @@ public:
 int MyClass::count = 1;
 
 int main() {
-    cout << MyClass::getCount(); //prints 1
+    cout << MyClass::getCount() << '\n'; //prints 1
+    MyClass t1; //constructor adds 1 to count
+    cout << t1.getCount(); //prints 2, static function used
     return 0;
 }
