@@ -1,57 +1,51 @@
-#include <iomanip>  //for setting width
+#include <../libraries/mylib.h>  //for printing error
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
 
-void printError(const string& msg) {
-  cerr << "\n"
-       << string(msg.length(), '-') + "\n" + msg + "\n" +
-              string(msg.length(), '-') + "\n";
-  exit(1);
-}
-
 class Matrix {
- private:
-  int r, c;
   vector<vector<int>> matrix;
 
  public:
-  Matrix(int ir, int ic) : r{ir}, c{ic}, matrix(r, vector<int>(c)) {}
+  Matrix(int r, int c) : matrix(r, vector<int>(c)) {}
+  Matrix();
 
-  Matrix() {
-    cout << "Enter the number of rows and columns: ";
-    cin >> r >> c;
-    if (r < 1 || c < 1) printError("Rows and Columns must be more than 1.");
-    matrix.resize(r, vector<int>(c));
-    for (int i = 0; i < r; i++)
-      for (int j = 0; j < c; j++) {
-        cout << "Enter element " << i + 1 << ", " << j + 1 << ": ";
-        cin >> matrix[i][j];
-      }
-  }
-
-  Matrix operator*(const Matrix& operand2) {
-    if (c != operand2.r) printError("undefined multiplication of matrices.");
-    Matrix result{r, operand2.c};
-    for (int r1 = 0; r1 < r; r1++)
-      for (int c2 = 0; c2 < operand2.c; c2++) {
-        for (int r2 = 0; r2 < operand2.r; r2++)
-          result.matrix[r1][c2] += matrix[r1][r2] * operand2.matrix[r2][c2];
-      }
+  Matrix operator*(const Matrix& m) {
+    if (matrix.empty() || m.matrix.empty() ||
+        matrix[0].size() != m.matrix.size())
+      printError("Undefined multiplication.");
+    Matrix result(matrix.size(), m.matrix[0].size());
+    for (int i = 0; i < matrix.size(); ++i)
+      for (int j = 0; j < m.matrix[0].size(); ++j)
+        for (int k = 0; k < m.matrix.size(); ++k)
+          result.matrix[i][j] += matrix[i][k] * m.matrix[k][j];
     return result;
   }
 
   void display() {
     for (auto& row : matrix) {
-      for (auto& element : row) cout << setw(10) << element;
+      for (auto& elem : row) cout << setw(10) << elem;
       cout << '\n';
     }
-  };
+  }
 };
+
+Matrix::Matrix() {
+  cout << "Enter rows and columns: ";
+  int r, c;
+  cin >> r >> c;
+  if (r < 1 || c < 1) printError("Invalid matrix dimensions.");
+  matrix.resize(r, vector<int>(c));
+  for (int i = 0; i < r; ++i)
+    for (int j = 0; j < c; ++j) {
+      cout << "Element " << i + 1 << "," << j + 1 << ": ";
+      cin >> matrix[i][j];
+    }
+}
 
 int main() {
   Matrix m1, m2;
   (m1 * m2).display();
-  return 0;
 }
