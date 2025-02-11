@@ -13,9 +13,7 @@ class Matrix {
   Matrix();
 
   Matrix operator*(const Matrix& m) {
-    if (matrix.empty() || m.matrix.empty() ||
-        matrix[0].size() != m.matrix.size())
-      printError("Undefined multiplication.");
+    if (matrix.empty() || m.matrix.empty() || matrix[0].size() != m.matrix.size()) printError("Undefined multiplication.");
     Matrix result(matrix.size(), m.matrix[0].size());
     for (int i = 0; i < matrix.size(); ++i)
       for (int j = 0; j < m.matrix[0].size(); ++j)
@@ -24,18 +22,16 @@ class Matrix {
     return result;
   }
 
-  void display() {
-    for (auto& row : matrix) {
-      for (auto& elem : row) cout << setw(10) << elem;
+void display() {
+  for (auto& row : matrix) {
+    for (auto& elem : row) cout << setw(10) << elem;
       cout << '\n';
     }
-  }
-};
+}};
 
 Matrix::Matrix() {
   cout << "Enter rows and columns: ";
-  int r, c;
-  cin >> r >> c;
+  int r, c; cin >> r >> c;
   if (r < 1 || c < 1) printError("Invalid matrix dimensions.");
   matrix.resize(r, vector<int>(c));
   for (int i = 0; i < r; ++i)
