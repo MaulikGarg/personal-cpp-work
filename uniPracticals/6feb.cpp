@@ -5,9 +5,7 @@
 using namespace std;
 
 void printError(const std::string& msg) {
-  std::cerr << "\n"
-            << std::string(msg.length(), '-') + "\n" + msg + "\n" +
-                   std::string(msg.length(), '-') + "\n";
+  std::cerr << "\n" << std::string(msg.length(), '-') + "\n" + msg + "\n" + std::string(msg.length(), '-') + "\n";
   exit(1);
 }
 
