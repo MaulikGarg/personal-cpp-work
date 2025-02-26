@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class Point {
@@ -41,19 +42,38 @@ class Circle : public Shape {
   int m_radius;
   ostream& print(ostream& os) const override {
     os << "Circle(" << m_center << ", radius " << m_radius << ")";
-    return os; 
+    return os;
   }
 
  public:
   Circle(Point p1, int rad) : m_center{p1}, m_radius{rad} {}
+  int getRadius() const { return m_radius; }
 };
 
-int main() {
-  Circle c{Point{1, 2}, 7};
-  std::cout << c << '\n';
+int getLargestRadius(std::vector<Shape*> v) {
+  int largestRad {0};
+  for(const auto& i : v){
+    if(auto* c{dynamic_cast<Circle*>(i)}){
+      if(c->getRadius() > largestRad)
+      largestRad = c->getRadius();
+    }
+  }
+  return largestRad;
+}
 
-  Triangle t{Point{1, 2}, Point{3, 4}, Point{5, 6}};
-  std::cout << t << '\n';
+int main() {
+  std::vector<Shape*> v{new Circle{Point{1, 2}, 7},
+                        new Triangle{Point{1, 2}, Point{3, 4}, Point{5, 6}},
+                        new Circle{Point{7, 8}, 3}};
+
+  for (const auto& i : v) {
+    cout << *i << '\n';
+  }
+
+  std::cout << "The largest radius is: " << getLargestRadius(v)
+            << '\n';  // write this function
+
+  // delete each element in the vector here
 
   return 0;
 }
