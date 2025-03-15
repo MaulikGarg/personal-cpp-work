@@ -8,7 +8,7 @@ Dated: 15 March 2025
 
 #include <iostream>
 #include <memory>
-#define USING_UNIQUE_POINTER
+// #define USING_UNIQUE_POINTER
 
 #ifdef USING_UNIQUE_POINTER
 
@@ -83,11 +83,21 @@ class LinkedList {
 
  public:
   LinkedList() = default;
-  ~LinkedList(){delete m_head;}
+  ~LinkedList();
   void addElement(const T& element);
   void printList() const;
 
 };
+
+template <typename T>
+LinkedList<T>::~LinkedList(){
+  NodeElement<T>* current{m_head};
+  while (current) {
+    NodeElement<T>* temporary = current;
+    current = current->m_next;
+    delete temporary;
+  }
+}
 
 template <typename T>
 void LinkedList<T>::addElement(const T& element) {
