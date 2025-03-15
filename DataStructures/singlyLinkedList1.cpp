@@ -8,7 +8,7 @@ Dated: 15 March 2025
 
 #include <iostream>
 #include <memory>
-// #define USING_UNIQUE_POINTER
+#define USING_UNIQUE_POINTER
 
 #ifdef USING_UNIQUE_POINTER
 
@@ -34,6 +34,7 @@ class LinkedList {
   LinkedList() = default;
   void addElement(const T& element);
   void printList() const;
+  void reverse();
 };
 
 template <typename T>
@@ -55,11 +56,28 @@ template <typename T>
 void LinkedList<T>::printList() const {
   NodeElement<T>* current{head.get()};
   while (current) {
-    std::cout << "[ " << current << " ] has " << current->m_data << " \n";
+    std::cout << current->m_data << " -> ";
     current = current->m_next.get();
   }
   std::cout << "null\n";
 }
+
+template <typename T>
+void LinkedList<T>::reverse() {
+  std::unique_ptr<NodeElement<T>> prev{nullptr};
+  std::unique_ptr<NodeElement<T>> current = std::move(head);
+  std::unique_ptr<NodeElement<T>> next{nullptr};
+
+  while (current) {
+    next = std::move(current->m_next);
+    current->m_next = std::move(prev);
+    prev = std::move(current);
+    current = std::move(next);
+  }
+  head = std::move(prev);
+}
+
+
 
 #else
 
@@ -86,11 +104,11 @@ class LinkedList {
   ~LinkedList();
   void addElement(const T& element);
   void printList() const;
-
+  void reverse();
 };
 
 template <typename T>
-LinkedList<T>::~LinkedList(){
+LinkedList<T>::~LinkedList() {
   NodeElement<T>* current{m_head};
   while (current) {
     NodeElement<T>* temporary = current;
@@ -118,20 +136,37 @@ template <typename T>
 void LinkedList<T>::printList() const {
   NodeElement<T>* current{m_head};
   while (current) {
-    std::cout << "[ " << current << " ] has " << current->m_data << " \n";
+    std::cout << current->m_data << " -> ";
     current = current->m_next;
   }
   std::cout << "null\n";
 }
 
+template <typename T>
+void LinkedList<T>::reverse() {
+  if (!m_head) return;
+  NodeElement<T>* prev{nullptr};
+  NodeElement<T>* current{m_head};
+  NodeElement<T>* next{nullptr};
+  while (current) {
+    next = current->m_next;
+    current->m_next = prev;
+    prev = current;
+    current = next;
+  }
+  m_head = prev;
+}
+
 #endif
 
 int main() {
-    LinkedList<int> list;
-    list.addElement(2);
-    list.addElement(5);
-    list.addElement(7);
-    list.addElement(9);
-    list.printList();
+  LinkedList<int> list;
+  list.addElement(2);
+  list.addElement(5);
+  list.addElement(7);
+  list.addElement(9);
+  list.printList();
+  list.reverse();
+  list.printList();
   return 0;
 }
