@@ -18,6 +18,7 @@ class LinkedList {
   void addFirst(const T& data);
   void addLast(const T& data);
   void addAtIndex(const T& data, int index);
+  void removeAtIndex(int index);
   friend std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
     Node<T>* current{list.m_head};
     while (current) {
@@ -33,10 +34,12 @@ template <typename T>
 void LinkedList<T>::addFirst(const T& data) {
   Node<T>* newNode = new Node{data};
 
-  if (!m_head) m_tail = newNode;
-
-  newNode->m_next = m_head;
-  m_head = newNode;
+  if (!m_head)
+    m_head = m_tail = newNode;
+  else {
+    newNode->m_next = m_head;
+    m_head = newNode;
+  }
 
   m_size++;
 }
@@ -45,10 +48,12 @@ template <typename T>
 void LinkedList<T>::addLast(const T& data) {
   Node<T>* newNode = new Node{data};
 
-  if (!m_head) m_tail = newNode;
-
-  m_tail->m_next = newNode;
-  m_tail = newNode;
+  if (!m_head)
+    m_head = m_tail = newNode;
+  else {
+    m_tail->m_next = newNode;
+    m_tail = newNode;
+  }
 
   m_size++;
 }
@@ -64,19 +69,53 @@ void LinkedList<T>::addAtIndex(const T& data, int index) {
     return;
   }
   // if we are adding at the last
-  if (index == m_size - 1) {
+  if (index == m_size) {
     addLast(data);
     return;
   }
 
   Node<T>* newNode = new Node{data};
-  Node<T>* current = {m_head};
-  while (--index) {
+  Node<T>* current{m_head};
+  // current should stop 1 before index
+  for (int i = 0; i < index - 1; i++) {
     current = current->m_next;
   }
+
   newNode->m_next = current->m_next;
   current->m_next = newNode;
   m_size++;
+}
+
+template <typename T>
+void LinkedList<T>::removeAtIndex(int index) {
+  if (!m_head) return;
+
+  // size is always => 0, we cant delete non existing Node
+  if (index < 0 || index >= m_size)
+    throw std::runtime_error("Invalid Index in removeAtIndex()");
+
+  if (index == 0) {
+    Node<T>* temp{m_head};
+    m_head = m_head->m_next;
+    delete temp;
+    if(!m_head) m_tail = nullptr;
+  }
+
+  else {
+    // prev reaches the node behind the to be deleted one
+    Node<T>* prev{m_head};
+    for (int i = 0; i < index - 1; i++) {
+      prev = prev->m_next;
+    }
+    Node<T>* temp{prev->m_next};
+    prev->m_next = temp->m_next;
+    delete temp;
+    // if prev has become that tail
+    if (!prev->m_next) m_tail = prev;
+  }
+
+  m_size--;
+
 }
 
 int main() {
@@ -87,10 +126,10 @@ int main() {
     list.addLast(3);
     std::cout << list;
     list.addAtIndex(4, 2);
-    list.addAtIndex(5, -1);
+    std::cout << list;
+    list.addAtIndex(5, 1);
     list.addAtIndex(6, 2);
-  } 
-  catch (const std::runtime_error& exception) {
+  } catch (const std::runtime_error& exception) {
     std::cout << exception.what() << '\n';
   }
   std::cout << list;
