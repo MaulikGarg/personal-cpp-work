@@ -1,7 +1,18 @@
+/*
+
+  S I N G L Y
+  L I N K E D
+    L I S T
+
+  Author: Maulik Garg  
+
+*/
+
 #include <iostream>
 
 template <typename T>
 class LinkedList {
+  // single element with data and ptr to next
   struct Node {
     T mm_data{};             // the data inside a node
     Node* mm_next{nullptr};  // the pointer to the next node
@@ -16,6 +27,7 @@ class LinkedList {
  public:
   // constructors
   LinkedList() {}
+  LinkedList(const T& data){addFirst(data);}
   ~LinkedList();
 
   // iterator class and functions
