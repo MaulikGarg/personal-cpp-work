@@ -5,6 +5,7 @@ struct Node {
   T m_data{};
   Node<T>* m_next{nullptr};
   Node(const T& data) : m_data{data}, m_next{nullptr} {}
+  Node(const T& data, Node<T>* ptr) : m_data{data}, m_next{ptr} {}
 };
 
 template <typename T>
@@ -15,20 +16,26 @@ class LinkedList {
 
  public:
   LinkedList() {}
+  ~LinkedList();
   void addFirst(const T& data);
   void addLast(const T& data);
   void addAtIndex(const T& data, int index);
   void removeAtIndex(int index);
-  friend std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
-    Node<T>* current{list.m_head};
-    while (current) {
-      os << current->m_data << " -> ";
-      current = current->m_next;
-    }
-    os << "end!\n";
-    return os;
-  }
+  void removeValue(const T& value);
+
+  template <typename U>
+  friend std::ostream& operator<<(std::ostream& os, const LinkedList<U>& list);
 };
+
+template <typename T>
+LinkedList<T>::~LinkedList() {
+  Node<T>* traverse{m_head};
+  while (traverse) {
+    Node<T>* temp = traverse;
+    traverse = traverse->m_next;
+    delete temp;
+  }
+}
 
 template <typename T>
 void LinkedList<T>::addFirst(const T& data) {
@@ -98,24 +105,57 @@ void LinkedList<T>::removeAtIndex(int index) {
     Node<T>* temp{m_head};
     m_head = m_head->m_next;
     delete temp;
-    if(!m_head) m_tail = nullptr;
+    if (!m_head) m_tail = nullptr;
+    m_size--;
+    return;
   }
 
-  else {
-    // prev reaches the node behind the to be deleted one
-    Node<T>* prev{m_head};
-    for (int i = 0; i < index - 1; i++) {
-      prev = prev->m_next;
-    }
-    Node<T>* temp{prev->m_next};
-    prev->m_next = temp->m_next;
-    delete temp;
-    // if prev has become that tail
-    if (!prev->m_next) m_tail = prev;
+  // prev reaches the node behind the to be deleted one
+  Node<T>* prev{m_head};
+  for (int i = 0; i < index - 1; i++) {
+    prev = prev->m_next;
   }
+  Node<T>* temp{prev->m_next};
+  prev->m_next = temp->m_next;
+  delete temp;
+  // if prev has become that tail
+  if (!prev->m_next) m_tail = prev;
 
   m_size--;
+}
 
+template <typename T>
+void LinkedList<T>::removeValue(const T& value) {
+  if (!m_head) return;
+
+  Node<T>* dummy = new Node<T>{T{}, m_head};
+  Node<T>* current = dummy;
+
+  while (current->m_next) {
+    if (current->m_next->m_data == value) {
+      Node<T>* temp = current->m_next;
+      current->m_next = temp->m_next;
+      if (temp == m_tail) m_tail = current;
+      delete temp;
+      m_size--;
+    } else {
+      current = current->m_next;
+    }
+  }
+
+  m_head = dummy->m_next;
+  delete dummy;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
+  Node<T>* current{list.m_head};
+  while (current) {
+    os << current->m_data << " -> ";
+    current = current->m_next;
+  }
+  os << "end!\n";
+  return os;
 }
 
 int main() {
