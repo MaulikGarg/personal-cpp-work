@@ -4,7 +4,7 @@
   L I N K E D
     L I S T
 
-  Author: Maulik Garg  
+  Author: Maulik Garg
 
 */
 
@@ -25,9 +25,14 @@ class LinkedList {
   int m_size{};
 
  public:
+  // deleted functions & operators
+  LinkedList(const LinkedList&) = delete;
+  LinkedList& operator=(const LinkedList&) = delete;
+
   // constructors
   LinkedList() {}
-  LinkedList(const T& data){addFirst(data);}
+  LinkedList(const T& data) { addFirst(data); }
+  LinkedList(LinkedList&& list) noexcept;
   ~LinkedList();
 
   // iterator class and functions
@@ -44,7 +49,7 @@ class LinkedList {
       mm_current = mm_current->mm_next;
       return *this;
     }
-    T& operator*() { return mm_current->mm_data; }
+    T& operator*() const { return mm_current->mm_data; }
   };
 
   // iterator specific functions
@@ -52,6 +57,7 @@ class LinkedList {
   iterator end() const { return iterator{nullptr}; }
 
   // standard functions
+  bool isEmpty() const { return !m_size; }
   void addFirst(const T& data);  // add data to the start of the list
   void addLast(const T& data);   // add data to the end of the list
   void addAtIndex(const T& data, int index);  // add data at a specific index
@@ -59,6 +65,7 @@ class LinkedList {
   void removeValue(const T& value);  // remove all occurences of a value
 
   // overloads
+  LinkedList& operator=(LinkedList&&) noexcept;
   template <typename U>
   friend std::ostream& operator<<(std::ostream& os, const LinkedList<U>& list);
 
@@ -79,6 +86,13 @@ class LinkedList {
           "Exception in getLast(): Cannot get element from empty list.\n");
   }
 };
+
+template <typename T>
+LinkedList<T>::LinkedList(LinkedList<T>&& list) noexcept
+    : m_head{list.m_head}, m_tail{list.m_tail}, m_size{list.m_size} {
+  list.m_head = list.m_tail = nullptr;
+  list.m_size = 0;
+}
 
 template <typename T>
 LinkedList<T>::~LinkedList() {
@@ -203,6 +217,16 @@ void LinkedList<T>::removeValue(const T& value) {
 }
 
 template <typename T>
+LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>&& other) noexcept {
+  // self assignment prevention
+  if (this == &other) return *this;
+  std::swap(m_head, other.m_head);
+  std::swap(m_size, other.m_size);
+  std::swap(m_tail, other.m_tail);
+  return *this;
+}
+
+template <typename T>
 std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
   if (!list.m_head) return os;
 
@@ -212,8 +236,8 @@ std::ostream& operator<<(std::ostream& os, const LinkedList<T>& list) {
   //   os << current->mm_data << " -> ";
   //   current = current->mm_next;
   // }
-  
-  for(auto i : list){
+
+  for (auto i : list) {
     os << i << " -> ";
   }
 
