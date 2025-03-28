@@ -44,17 +44,19 @@ class HashMap {
     size_t mm_index{};
     // number of buckets
     int mm_bucketCount{};
+    // current bucket iterator
+    std::list<KeyValuePair>::iterator mm_it;
 
    public:
     iterator(std::list<KeyValuePair>* bucketptr, int bucketCount);
-    bool operator(const iterator& operand);
+    bool operator!=(const iterator& operand);
+    iterator& operator++();
+    KeyValuePair& operator*();
   };
 
   // iterator specific functions
   iterator begin() { return {m_buckets, 0}; }
-  iterator end() {
-    return { m_buckets, m_bucketCount }
-  }
+  iterator end() { return {m_buckets, m_bucketCount}; }
   // constructors/destructors
   HashMap(int);
   ~HashMap() { delete[] m_buckets; }
@@ -64,8 +66,8 @@ class HashMap {
   void printMap();
   V& find(const K& key);
   // getters
-  float getLoadFactor() {
-    return static_cast<float>(m_elementCount) / (m_bucketCount);
+  double getLoadFactor() {
+    return (m_elementCount) / static_cast<double>(m_bucketCount);
   }
 };
 
@@ -73,14 +75,33 @@ template <typename K, typename V>
 HashMap<K, V>::iterator::iterator(std::list<KeyValuePair>* bucketptr,
                                   int bucketCount)
     : mm_buckets{bucketptr}, mm_bucketCount{bucketCount} {
-  while (mm_index != bucketCount && mm_buckets[mm_index].empty()) {
+  while (mm_index != static_cast<size_t>(bucketCount) && mm_buckets[mm_index].empty()) {
     ++mm_index;
+  }
+  if (mm_index < static_cast<size_t>(mm_bucketCount)) {
+    mm_it = mm_buckets[mm_index].begin();
   }
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::iterator::!=(const iterator& operand){
+bool HashMap<K, V>::iterator::operator!=(const iterator& operand) {
+  return mm_index != operand.mm_index || mm_buckets != operand.mm_buckets ||
+         mm_it != operand.mm_it;
+}
 
+template <typename K, typename V>
+HashMap<K, V>::KeyValuePair& HashMap<K, V>::iterator::operator*() {
+  return *mm_it;
+}
+
+template <typename K, typename V>
+typename HashMap<K, V>::iterator& HashMap<K, V>::iterator::operator++() {
+  if (++mm_it != mm_buckets[mm_index].end()) return *this;
+  while (mm_it == mm_buckets[mm_index].end() && mm_index + 1 < static_cast<size_t>(mm_bucketCount)) {
+    mm_index++;
+    mm_it = mm_buckets[mm_index].begin();
+  }
+  return *this;
 }
 
 template <typename K, typename V>
@@ -103,6 +124,14 @@ bool HashMap<K, V>::insert(const K& key, const V& val) {
   }
 
   auto& bucket = m_buckets[calculateHash(key)];
+  // check if key exists in the bucket
+  for(auto& pair: bucket){
+    if(pair.mm_key == key){
+      pair.mm_val = val;
+      return true;
+    }
+  }
+
   bucket.push_back(KeyValuePair{key, val});
   m_elementCount++;
   return true;
@@ -113,12 +142,9 @@ bool HashMap<K, V>::resize() {
   int newBucketCount = m_bucketCount * 2;
   auto* newBuckets = new std::list<KeyValuePair>[newBucketCount];
 
-  for (int i = 0; i < m_bucketCount; i++) {
-    auto& bucket = m_buckets[i];
-    for (auto& pair : bucket) {
-      size_t newHash = calculateHash(pair.mm_key, newBucketCount);
-      newBuckets[newHash].push_back(pair);
-    }
+  for (auto& pair : *this) {
+    size_t newHash = calculateHash(pair.mm_key, newBucketCount);
+    newBuckets[newHash].push_back(pair);
   }
 
   delete[] m_buckets;
@@ -129,7 +155,13 @@ bool HashMap<K, V>::resize() {
 }
 
 template <typename K, typename V>
-V& HashMap<K, V>::find(const K& key) {}
+V& HashMap<K, V>::find(const K& key) {
+  for (auto& pair : *this) {
+    if (pair.mm_key == key) return pair.mm_val;
+  }
+
+  throw std::runtime_error("Key not found");
+}
 
 template <typename K, typename V>
 void HashMap<K, V>::printMap() {
