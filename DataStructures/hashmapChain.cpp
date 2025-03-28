@@ -9,10 +9,10 @@
 
 */
 
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <string>
-#include <cassert>
 
 template <typename K, typename V>
 class HashMap {
@@ -22,35 +22,66 @@ class HashMap {
     V mm_val;
     KeyValuePair(K key, V val) : mm_key{key}, mm_val{val} {}
   };
-
   // load factor at which the map should resize
   const float m_resizeLoad{2.00f};
   // the total number of buckets
   int m_bucketCount;
   // the number of buckets filled
-  int m_bucketsFilled{};
+  int m_elementCount{};
   // pointer to a list of keyval pairs
   std::list<KeyValuePair>* m_buckets;
-
-  // hash functions
+  // hash getter
   size_t calculateHash(const K& key, int buckets = 0);
-
   // resizes the hashmap incase of high load factor
   bool resize();
 
  public:
+  // iterators
+  class iterator {
+    // array of lists
+    std::list<KeyValuePair>* mm_buckets;
+    // current index in the array
+    size_t mm_index{};
+    // number of buckets
+    int mm_bucketCount{};
+
+   public:
+    iterator(std::list<KeyValuePair>* bucketptr, int bucketCount);
+    bool operator(const iterator& operand);
+  };
+
+  // iterator specific functions
+  iterator begin() { return {m_buckets, 0}; }
+  iterator end() {
+    return { m_buckets, m_bucketCount }
+  }
   // constructors/destructors
   HashMap(int);
   ~HashMap() { delete[] m_buckets; }
-  // inserting element, returns true on success
-  bool insert(K key, V val);
 
+  // funcs
+  bool insert(const K& key, const V& val);
+  void printMap();
+  V& find(const K& key);
   // getters
   float getLoadFactor() {
-    return static_cast<float>(m_bucketsFilled) / static_cast<float>(m_bucketCount);
+    return static_cast<float>(m_elementCount) / (m_bucketCount);
   }
-  void printMap();
 };
+
+template <typename K, typename V>
+HashMap<K, V>::iterator::iterator(std::list<KeyValuePair>* bucketptr,
+                                  int bucketCount)
+    : mm_buckets{bucketptr}, mm_bucketCount{bucketCount} {
+  while (mm_index != bucketCount && mm_buckets[mm_index].empty()) {
+    ++mm_index;
+  }
+}
+
+template <typename K, typename V>
+bool HashMap<K, V>::iterator::!=(const iterator& operand){
+
+}
 
 template <typename K, typename V>
 HashMap<K, V>::HashMap(int i) {
@@ -60,12 +91,12 @@ HashMap<K, V>::HashMap(int i) {
 
 template <typename K, typename V>
 size_t HashMap<K, V>::calculateHash(const K& key, int buckets) {
-  if(!buckets) buckets = m_bucketCount;
+  if (!buckets) buckets = m_bucketCount;
   return std::hash<K>{}(key) % buckets;
 }
 
 template <typename K, typename V>
-bool HashMap<K, V>::insert(K key, V val) {
+bool HashMap<K, V>::insert(const K& key, const V& val) {
   // resize if average list width is too much
   if (getLoadFactor() > m_resizeLoad) {
     resize();
@@ -73,7 +104,7 @@ bool HashMap<K, V>::insert(K key, V val) {
 
   auto& bucket = m_buckets[calculateHash(key)];
   bucket.push_back(KeyValuePair{key, val});
-  m_bucketsFilled++;
+  m_elementCount++;
   return true;
 }
 
@@ -98,7 +129,10 @@ bool HashMap<K, V>::resize() {
 }
 
 template <typename K, typename V>
-void HashMap<K, V>::printMap(){
+V& HashMap<K, V>::find(const K& key) {}
+
+template <typename K, typename V>
+void HashMap<K, V>::printMap() {
   std::cout << "-------------------------\n";
   for (int i = 0; i < m_bucketCount; i++) {
     auto& bucket = m_buckets[i];
