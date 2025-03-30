@@ -24,12 +24,11 @@ class HashMap {
   };
 
   /*--- HashMap Functions ---*/
-  HashMap();
+  HashMap() : m_totalBuckets{1}, m_filledBuckets{0} { m_database.resize(1) };
   explicit HashMap(int size);
-  ~HashMap();
+  bool updateValue(const K&, const V&);
   bool insert(const K&, const V&);
   bool remove(const K&);
-  bool updateValue(const K&, const V&);
   const V& ValueAt(const K&) const;
   double getLoadFactor() const;
 
@@ -47,15 +46,20 @@ class HashMap {
   struct Node {
     std::pair<K, V> pair;
     state nodeState{state::empty};
+    Node() : nodeState{state::empty} {}
   };
   /*--- Map Data ---*/
+  static const size_t m_hash_shifting{0x9e3779b9};  // 0x9e3779b9 is derived
+                                                    // from the Golden Ratio
   static const double m_breakpointLoadFactor{0.75};
   std::vector<Node> m_database;
   size_t m_filledBuckets;
   size_t m_totalBuckets;
 
   /*--- Insider Functions ---*/
-  size_t calculateHash(const K&) const;
+  void resizeMap();
+  size_t calculateHashOne(const K&) const;
+  size_t calculateHashTwo(const K&, size_t offset) const;
   void resizeMap();
 };
 
@@ -88,7 +92,8 @@ bool HashMap<K, V>::Iterator::operator!=(const Iterator& other) const {
 
 template <typename K, typename V>
 HashMap<K, V>::Iterator& HashMap<K, V>::Iterator::operator++() {
-  if (mm_currentIterator == mm_map.end()) return *this;
+  if (mm_currentIterator == mm_map.end())
+    throw std::runtime_error("EXCEPTION: CANNOT MOVE FORWARD END ITERATOR");
   ++mm_currentIterator;
   forwardWhenEmpty();
   return *this;
@@ -104,3 +109,68 @@ std::pair<K, V>& HashMap<K, V>::Iterator::operator*() {
 }
 
 /*---- ITERATOR FUNCTIONS END -----*/
+
+/*----- HashMap Functions -----*/
+
+template <typename K, typename V>
+size_t HashMap<K, V>::calculateHashOne(const K& key) const {
+  if (!m_totalBuckets)
+    throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
+  return std::hash<K>{}(key) % m_totalBuckets;
+};
+
+template <typename K, typename V>
+size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset) const {
+  if (!m_totalBuckets)
+    throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
+  return (std::hash<K>{}(key ^ m_hash_shifting) + offset) % m_totalBuckets;
+}
+
+template <typename K, typename V>
+HashMap<K, V>::HashMap(int size) : m_totalBuckets{size}, m_filledBuckets{0} {
+  if (!m_totalBuckets)
+    throw std::runtime_error("EXCEPTION: HASHMAP CANNOT BE OF SIZE ZERO.");
+  m_database.resize(m_totalBuckets);
+}
+
+template <typename K, typename V>
+bool HashMap<K, V>::updateValue(const K& key, const V& value) {
+  if (!m_totalBuckets)
+    throw std::runtime_error("EXCEPTION: CANNOT UPDATE VALUE IN EMPTY MAP.");
+
+  size_t index{calculateHash(key)};
+
+  if (m_database[index].nodeState != state::filled ||
+      m_database[index].pair.first != key)
+    return false;
+
+  m_database[index].pair.second = value;
+  return true;
+}
+
+template <typename K, typename V>
+bool HashMap<K, V>::insert(const K& key, const V& value) {
+
+  size_t index = calculateHash(key);
+
+  if(getLoadFactor() > m_breakpointLoadFactor){
+    resizeMap();
+    index = calculateHashOne(key);
+  }
+  
+  size_t offset {0};
+  while(m_database[index].nodeState == state::filled && m_database[index].pair.first != key){
+    index = calculateHashTwo(key, ++offset);
+  }
+
+  if(m_database[index].pair.first == key){
+    m_database[index].pair.second = value;
+    return true;
+  }
+
+  m_database[index].nodeState = state::filled;
+  m_database[index].pair = {key, value};
+  m_filledBuckets++;
+  return true;
+
+}
