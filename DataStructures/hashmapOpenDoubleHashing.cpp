@@ -41,7 +41,7 @@ class HashMap {
   // basic constructor, sets size to 1
   HashMap() : m_filledBuckets{0}, m_totalBuckets{1} { m_database.resize(1); }
   // sized constructor, sets map size to given argument
-  explicit HashMap(int size);
+  explicit HashMap(size_t size);
   // updates value at a specific key, throws an exception if map is empty,
   // returns false if key is not found, true if update success
   bool updateValue(const K&, const V&);
@@ -74,8 +74,10 @@ class HashMap {
   void resizeMap();
   // basic hash function
   size_t calculateHashOne(const K&) const;
+  size_t calculateHashOne(const K&, size_t maxSize) const;
   // backup hash function, takes an offset to be considered in calculations
   size_t calculateHashTwo(const K&, size_t offset) const;
+  size_t calculateHashTwo(const K&, size_t offset, size_t maxSize) const;
 };
 
 /*----- HashMap Class End -----*/
@@ -149,10 +151,10 @@ void HashMap<K, V>::resizeMap() {
   for (const auto& i : m_database) {
     const K& key = i.pair.first;
     if (i.nodeState != filled) continue;
-    size_t index = std::hash<K>{}(key) % newSize;
+    size_t index = calculateHashOne(key, newSize);
     size_t offset{0};
     while (newData[index].nodeState == state::filled) {
-      index = (std::hash<K>{}(key ^ m_hash_shifting) + offset) % newSize;
+      index = calculateHashTwo(key, offset, newSize);
     }
     newData[index].pair = {i.pair.first, i.pair.second};
     newData[index].nodeState = state::filled;
@@ -169,6 +171,13 @@ size_t HashMap<K, V>::calculateHashOne(const K& key) const {
 };
 
 template <typename K, typename V>
+size_t HashMap<K, V>::calculateHashOne(const K& key, size_t maxSize) const {
+  if (!maxSize)
+    throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
+  return std::hash<K>{}(key) % maxSize;
+};
+
+template <typename K, typename V>
 size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset) const {
   if (!m_totalBuckets)
     throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
@@ -176,7 +185,14 @@ size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset) const {
 }
 
 template <typename K, typename V>
-HashMap<K, V>::HashMap(int size) : m_totalBuckets{size}, m_filledBuckets{0} {
+size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset, size_t maxSize) const {
+  if (!maxSize)
+    throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
+  return (std::hash<K>{}(key ^ m_hash_shifting) + offset) % maxSize;
+}
+
+template <typename K, typename V>
+HashMap<K, V>::HashMap(size_t size) : m_filledBuckets{0}, m_totalBuckets{size} {
   if (!m_totalBuckets)
     throw std::runtime_error("EXCEPTION: HASHMAP CANNOT BE OF SIZE ZERO.");
   m_database.resize(m_totalBuckets);
@@ -213,8 +229,7 @@ bool HashMap<K, V>::insert(const K& key, const V& value) {
   }
 
   if (m_database[index].pair.first == key) {
-    m_database[index].pair.second = value;
-    return true;
+    return false;
   }
 
   m_database[index].nodeState = state::filled;
@@ -228,13 +243,4 @@ void HashMap<K, V>::print() {
   for (auto i : *this) {
     std::cout << i.first << " -> " << i.second << '\n';
   }
-}
-
-int main() {
-  HashMap<int, std::string> map;
-  map.insert(1, "onee");
-  map.insert(2, "twoo");
-  map.insert(3, "thre");
-  map.insert(4, "four");
-  map.print();
 }
