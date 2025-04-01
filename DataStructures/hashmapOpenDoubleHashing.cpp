@@ -1,3 +1,6 @@
+#ifndef LIST2_H
+#define LIST2_H
+
 /*--- Open Addressing Hashmap Implementation  ---*/
 
 #include <iostream>
@@ -33,7 +36,7 @@ class HashMap {
     Iterator(t_data&, t_vectorIterator start);
     bool operator!=(const Iterator&) const;
     Iterator& operator++();
-    std::pair<K, V>& operator*();
+    Node& operator*();
   };
 
   /*--- HashMap Functions ---*/
@@ -50,7 +53,7 @@ class HashMap {
   // erases a key value pair from the hashmap
   bool remove(const K&);
   // returns the value at a specific key
-  const V& ValueAt(const K&) const;
+  const V& ValueAt(const K&);
   // returns the load factor of the current Map state
   double getLoadFactor() const;
   // prints the entire map in a graceful format
@@ -121,12 +124,12 @@ HashMap<K, V>::Iterator& HashMap<K, V>::Iterator::operator++() {
 }
 
 template <typename K, typename V>
-std::pair<K, V>& HashMap<K, V>::Iterator::operator*() {
+typename HashMap<K, V>::Node& HashMap<K, V>::Iterator::operator*() {
   if (mm_currentIterator == mm_map.end() ||
       mm_currentIterator->nodeState != state::filled)
     throw std::runtime_error("EXCEPTION: CANNOT DEREFERENCE INVALID ITERATOR.");
 
-  return mm_currentIterator->pair;
+  return *mm_currentIterator;
 }
 
 /*---- ITERATOR FUNCTIONS END -----*/
@@ -134,13 +137,6 @@ std::pair<K, V>& HashMap<K, V>::Iterator::operator*() {
 /*----------------------------------------------------------------------------*/
 
 /*----- HashMap Functions -----*/
-
-template <typename K, typename V>
-double HashMap<K, V>::getLoadFactor() const {
-  double size = (double)m_database.size();
-  if (!size) return 0;
-  return (double)m_filledBuckets / size;
-}
 
 template <typename K, typename V>
 void HashMap<K, V>::resizeMap() {
@@ -154,7 +150,7 @@ void HashMap<K, V>::resizeMap() {
     size_t index = calculateHashOne(key, newSize);
     size_t offset{0};
     while (newData[index].nodeState == state::filled) {
-      index = calculateHashTwo(key, offset, newSize);
+      index = calculateHashTwo(key, ++offset, newSize);
     }
     newData[index].pair = {i.pair.first, i.pair.second};
     newData[index].nodeState = state::filled;
@@ -185,7 +181,8 @@ size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset) const {
 }
 
 template <typename K, typename V>
-size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset, size_t maxSize) const {
+size_t HashMap<K, V>::calculateHashTwo(const K& key, size_t offset,
+                                       size_t maxSize) const {
   if (!maxSize)
     throw std::runtime_error("EXCEPTION: CANNOT CALCULATE HASH OF EMPTY MAP");
   return (std::hash<K>{}(key ^ m_hash_shifting) + offset) % maxSize;
@@ -239,8 +236,39 @@ bool HashMap<K, V>::insert(const K& key, const V& value) {
 }
 
 template <typename K, typename V>
+bool HashMap<K, V>::remove(const K& key){
+  for(auto& i : *this){
+    if(i.pair.first == key){
+      i.nodeState = state::erased;
+      i.pair = {};
+      return true;
+    }
+  }
+  return false;
+}
+
+template <typename K, typename V>
+const V& HashMap<K, V>::ValueAt(const K& key) {
+  for (const auto& i : *this){
+    if(i.pair.first == key) return i.pair.second;
+  }
+  throw std::runtime_error("EXCEPTION: KEY NOT FOUND.");
+}
+
+template <typename K, typename V>
+double HashMap<K, V>::getLoadFactor() const {
+  double size = (double)m_database.size();
+  if (!size) return 0;
+  return (double)m_filledBuckets / size;
+}
+
+template <typename K, typename V>
 void HashMap<K, V>::print() {
   for (auto i : *this) {
-    std::cout << i.first << " -> " << i.second << '\n';
+    std::cout << i.pair.first << " -> " << i.pair.second << '\n';
   }
 }
+
+/*----- HashMap Functions End -----*/
+
+#endif  // LIST2_H
