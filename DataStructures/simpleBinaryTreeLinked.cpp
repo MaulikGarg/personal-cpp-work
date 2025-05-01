@@ -26,6 +26,8 @@ class BinaryTree {
   BinaryTree();  // constructor, inserts into root node
   ~BinaryTree();
   void insert(Node* node);  // adds to a node
+  void display() const;
+  void display(Node* node, int depth = 0) const;
 
   // delete the copy functions
   BinaryTree(const BinaryTree&) = delete;
@@ -77,6 +79,23 @@ void BinaryTree<T>::insert(Node* node) {
   }
 }
 
+template <typename T>
+void BinaryTree<T>::display() const {
+  display(m_root);
+}
+
+template <typename T>
+void BinaryTree<T>::display(Node* node, int depth) const {
+  if (!node) return;
+  display(node->mm_right, depth + 1);
+  if(depth){ // false if its root node
+    for (int i = 1; i < depth; i++) std::cout << "|------";
+    std::cout << "|---->";
+  } 
+  std::cout << node->mm_val << '\n' ;
+  display(node->mm_left, depth + 1);
+}
+
 /* private helper functions */
 
 template <typename T>
@@ -93,4 +112,9 @@ void BinaryTree<T>::clear(Node* node) {
   clear(node->mm_left);
   clear(node->mm_right);
   delete node;
+}
+
+int main(){
+  BinaryTree<int> tree;
+  tree.display();
 }
