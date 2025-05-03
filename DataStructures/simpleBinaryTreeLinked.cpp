@@ -25,7 +25,8 @@ class BinaryTree {
  public:
   BinaryTree();  // constructor, inserts into root node
   ~BinaryTree();
-  void insert(Node* node);  // adds to a node
+  void insert();  // asks left right until the appropriate place is reached
+  void insert(Node*& node);  // inserts a node's children
   void display() const;
   void display(Node* node, int depth = 0) const;
 
@@ -45,9 +46,7 @@ class BinaryTree {
 /* public functions */
 template <typename T>
 BinaryTree<T>::BinaryTree() {
-  m_root = new Node{insertPrompt()};
-  insert(m_root);
-  ++m_size;
+  insert (m_root);
 }
 
 template <typename T>
@@ -56,26 +55,43 @@ BinaryTree<T>::~BinaryTree() {
 }
 
 template <typename T>
-void BinaryTree<T>::insert(Node* node) {
-  char reply;
+void BinaryTree<T>::insert() {
+  insert(m_root);
+}
 
-  // asks if insert to left then ask if return to right
-  std::cout << "Do you want to insert to the left of " << node->mm_val
-            << " ?(y/n)\n>";
-  std::cin >> reply;
-  if (reply == 'y' || reply == 'Y') {
-    node->mm_left = new Node{insertPrompt()};
-    insert(node->mm_left);
-    ++m_size;
+template <typename T>
+void BinaryTree<T>::insert(Node*& node) {
+  if (!node) {
+    node = new Node{insertPrompt()};
+    m_size++;
   }
 
-  std::cout << "Do you want to insert to the right of " << node->mm_val
-            << " ?(y/n)\n>";
-  std::cin >> reply;
-  if (reply == 'y' || reply == 'Y') {
-    node->mm_right = new Node{insertPrompt()};
-    insert(node->mm_right);
-    ++m_size;
+  char reply;
+  Node* curr {node};
+  // asks if insert to left then ask if return to right
+  while(true) {
+    std::cout << "Do you want to insert to the left of " << curr->mm_val
+              << " ?(y/n)\n>";
+    std::cin >> reply;
+    if(reply != 'Y' && reply != 'y') break;
+    if (curr->mm_left)
+      curr = curr->mm_left;
+    else {
+      insert(curr->mm_left);
+      break;
+    }
+  }
+  while(true) {
+    std::cout << "Do you want to insert to the right of " << curr->mm_val
+              << " ?(y/n)\n>";
+    std::cin >> reply;
+    if(reply != 'Y' && reply != 'y') break;
+    if (curr->mm_right)
+      curr = curr->mm_right;
+    else {
+      insert(curr->mm_right);
+      break;
+    }
   }
 }
 
@@ -88,11 +104,11 @@ template <typename T>
 void BinaryTree<T>::display(Node* node, int depth) const {
   if (!node) return;
   display(node->mm_right, depth + 1);
-  if(depth){ // false if its root node
+  if (depth) {  // false if its root node
     for (int i = 1; i < depth; i++) std::cout << "|------";
     std::cout << "|---->";
-  } 
-  std::cout << node->mm_val << '\n' ;
+  }
+  std::cout << node->mm_val << '\n';
   display(node->mm_left, depth + 1);
 }
 
@@ -114,7 +130,9 @@ void BinaryTree<T>::clear(Node* node) {
   delete node;
 }
 
-int main(){
+int main() {
   BinaryTree<int> tree;
+  tree.display();
+  tree.insert();
   tree.display();
 }
