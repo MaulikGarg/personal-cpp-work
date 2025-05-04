@@ -46,7 +46,7 @@ class BinaryTree {
 /* public functions */
 template <typename T>
 BinaryTree<T>::BinaryTree() {
-  insert (m_root);
+  insert(m_root);
 }
 
 template <typename T>
@@ -67,31 +67,35 @@ void BinaryTree<T>::insert(Node*& node) {
   }
 
   char reply;
-  Node* curr {node};
+  Node* curr{node};
   // asks if insert to left then ask if return to right
-  while(true) {
+  while (true) {
     std::cout << "Do you want to insert to the left of " << curr->mm_val
               << " ?(y/n)\n>";
     std::cin >> reply;
-    if(reply != 'Y' && reply != 'y') break;
-    if (curr->mm_left)
-      curr = curr->mm_left;
-    else {
-      insert(curr->mm_left);
-      break;
+
+    if (reply == 'y' || reply == 'Y') {
+      if (curr->mm_left) {
+        curr = curr->mm_left;
+        continue;
+      } else {
+        insert(curr->mm_left);
+      }
     }
-  }
-  while(true) {
+
     std::cout << "Do you want to insert to the right of " << curr->mm_val
               << " ?(y/n)\n>";
     std::cin >> reply;
-    if(reply != 'Y' && reply != 'y') break;
-    if (curr->mm_right)
-      curr = curr->mm_right;
-    else {
-      insert(curr->mm_right);
-      break;
+
+    if (reply == 'Y' || reply == 'y') {
+      if (curr->mm_right) {
+        curr = curr->mm_right;
+        continue;
+      } else {
+        insert(curr->mm_right);
+      }
     }
+    break;
   }
 }
 
