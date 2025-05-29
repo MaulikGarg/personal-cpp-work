@@ -95,7 +95,9 @@
         "stdfloat": "cpp",
         "syncstream": "cpp",
         "typeindex": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "flat_map": "cpp",
+        "flat_set": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true
 }
