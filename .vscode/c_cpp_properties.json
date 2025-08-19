@@ -4,14 +4,14 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "E:/MSYS2/mingw64/include/c++/15.1.0"
+                "E:/mingw64/include/c++/14.2.0"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "E:\\MSYS2\\mingw64\\bin\\g++.exe",
+            "compilerPath": "E:\\mingw64\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++23",
             "compilerArgs": [
@@ -21,7 +21,7 @@
             "intelliSenseMode": "windows-gcc-x64",
             "browse": {
                 "path": [
-                    "E:/MSYS2/mingw64/include/c++/15.1.0"
+                    "E:/mingw64/include/c++/14.2.0"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             }

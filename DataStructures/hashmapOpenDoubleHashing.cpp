@@ -26,9 +26,9 @@ class HashMap {
   /*--- Iterator Class ---*/
   class Iterator {
     using t_data = std::vector<Node>;
-    using t_vectorIterator = std::vector<Node>::iterator;
+    using t_vectorIterator = typename std::vector<Node>::iterator;
     t_data& mm_map;
-    std::vector<Node>::iterator mm_currentIterator;
+    typename std::vector<Node>::iterator mm_currentIterator;
     void forwardWhenEmpty();
 
    public:
@@ -115,7 +115,7 @@ bool HashMap<K, V>::Iterator::operator!=(const Iterator& other) const {
 }
 
 template <typename K, typename V>
-HashMap<K, V>::Iterator& HashMap<K, V>::Iterator::operator++() {
+typename HashMap<K, V>::Iterator& HashMap<K, V>::Iterator::operator++() {
   if (mm_currentIterator == mm_map.end())
     throw std::runtime_error("EXCEPTION: CANNOT MOVE FORWARD END ITERATOR");
   ++mm_currentIterator;
