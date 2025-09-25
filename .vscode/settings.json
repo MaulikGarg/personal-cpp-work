@@ -97,7 +97,8 @@
         "typeindex": "cpp",
         "cassert": "cpp",
         "flat_map": "cpp",
-        "flat_set": "cpp"
+        "flat_set": "cpp",
+        "queue": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true
 }

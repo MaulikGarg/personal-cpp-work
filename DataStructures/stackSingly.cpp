@@ -7,7 +7,7 @@
   L I N K E D
     L I S T
 
-  Author: Maulik Garg
+  Maulik Garg
 
 */
 

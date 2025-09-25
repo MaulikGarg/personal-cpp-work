@@ -4,7 +4,7 @@
   C H A I N I N G
    H A S H M A P
 
-  Author: Maulik Garg
+  Maulik Garg
   Dated: 26 March 2025
 
 */
