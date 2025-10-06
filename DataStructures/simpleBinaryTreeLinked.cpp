@@ -109,8 +109,8 @@ void BinaryTree<T>::display(Node* node, int depth) const {
   if (!node) return;
   display(node->mm_right, depth + 1);
   if (depth) {  // false if its root node
-    for (int i = 1; i < depth; i++) std::cout << "|------";
-    std::cout << "|---->";
+    for (int i = 1; i < depth; i++) std::cout << "|----";
+    std::cout << "|--->";
   }
   std::cout << node->mm_val << '\n';
   display(node->mm_left, depth + 1);
