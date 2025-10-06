@@ -80,14 +80,15 @@ void BinarySearchTree<T>::deleteNode(Node* node){
 
 template <typename T>
 void BinarySearchTree<T>::insert(Node* node, T value){
-  // first check the position then check if node exists.
+  
+  // check if it comes to the left or the right
   if(node->mm_data > value){
-    if(node->mm_left) insert(node->mm_left, value);
+    if(node->mm_left) insert(node->mm_left, value); // check if left exists, if not, make it.
     else node->mm_left = new Node(value);
   }
 
   else if (node->mm_data < value){
-    if(node->mm_right) insert(node->mm_right, value);
+    if(node->mm_right) insert(node->mm_right, value); // check if right exists, if not, make it.
     else node->mm_right = new Node(value);
   }
 
