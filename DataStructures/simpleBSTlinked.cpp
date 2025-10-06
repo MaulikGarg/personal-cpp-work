@@ -28,7 +28,6 @@ class BinarySearchTree {
   ~BinarySearchTree();        // destructor -> deletes all nodes
   void insert(T value);       // adds into the BST after finding the appropriate
                               // location, ignores if repeat
-  Node* getNodeByValue();     // get a Node's pointer by its value
 
   // disable shallow pointer copying
   BinarySearchTree(const BinarySearchTree&) = delete;
@@ -39,6 +38,7 @@ class BinarySearchTree {
   int m_size{};
   void deleteNode(Node* node);       // delete a specific node
   void insert(Node* node, T value);  // insert into a specific node
+  Node* getNodeByValue(T value);     // get a Node's pointer by its value
 };
 /*--- primary class end ---*/
 
@@ -101,6 +101,19 @@ void BinarySearchTree<T>::insert(Node* node, T value) {
   }
 
   // if control reaches here, that means its equal, we ignore.
+}
+
+template <typename T>
+typename BinarySearchTree<T>::Node* BinarySearchTree<T>::getNodeByValue(
+    T value) {
+  Node* current{m_root};
+  while (current && current->mm_data != value) {
+    if (current->mm_data > value)
+      current = current->mm_left;
+    else
+      current = current->mm_right;
+  }
+  return current;
 }
 
 /*--- private functions end ---*/
