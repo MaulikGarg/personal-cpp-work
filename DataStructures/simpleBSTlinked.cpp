@@ -23,7 +23,7 @@ class BinarySearchTree {
 
   // primary BST functions
  public:
-  BinarySearchTree();         // no value constructor
+  BinarySearchTree() {};         // no value constructor
   BinarySearchTree(T value);  // constructor -> inserts into root
   ~BinarySearchTree();        // destructor -> deletes all nodes
   void insert(T value);       // adds into the BST after finding the appropriate location, ignores if repeat
