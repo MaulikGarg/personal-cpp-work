@@ -13,7 +13,7 @@ class AVL_Tree {
     T mm_data{};
     Node* mm_left{nullptr};
     Node* mm_right{nullptr};
-    int height{};
+    int mm_height{};
     // node constructors
     Node(T val) : mm_data{val} {}
   };
@@ -38,9 +38,9 @@ class AVL_Tree {
   Node* getNodeByValue(T value, Node* node = m_root);  // get a Node's pointer by its value
   int height(Node* node);  // returns the height of a node, i.e, number of edges until a leaf
   // balancing functions
-  void rotate(Node* node);       // determines which rotation is needed and performs it
-  void leftRotate(Node* node);   // performs a left rotation on a node
-  void rightRotate(Node* node);  // performs a right rotation on a node
+  Node* rotate(Node* node);       // determines which rotation is needed and performs it
+  Node* leftRotate(Node* node);   // performs a left rotation on a node
+  Node* rightRotate(Node* node);  // performs a right rotation on a node
 };
 /*--- primary class end ---*/
 
@@ -82,33 +82,22 @@ typename AVL_Tree<T>::Node* AVL_Tree<T>::insert(Node* node, T value) {
     m_size++;
     return new Node(value);
   }
-  // first check the position then check if node exists.
-  if (node->mm_data > value) {
-    if (node->mm_left)
-      insert(node->mm_left, value);
-    else {
-      node->mm_left = new Node(value);
-      m_size++;
-    }
-  }
-
-  else if (node->mm_data < value) {
-    if (node->mm_right)
-      insert(node->mm_right, value);
-    else {
-      node->mm_right = new Node(value);
-      m_size++;
-    }
+  // check the position then insert recursively
+  if (value < node->mm_data) {
+    node->mm_left = insert(node->mm_left, value);
+  } else if (value > node->mm_data) {
+    node->mm_right = insert(node->mm_right, value);
   }  // if control reaches here, that means its equal, we ignore.
 
-  node->height = std::max(height(node->mm_left), height(node->mm_right)) + 1;
+  node->mm_height = std::max(height(node->mm_left), height(node->mm_right)) + 1;
   return rotate(node);  // return the original node
 }
 
 template <typename T>
 // default value for node is root.
 typename AVL_Tree<T>::Node* AVL_Tree<T>::getNodeByValue(T value, Node* node) {
-  if (!node) return nullptr;  // node doesn't exist.
+  if (!node) node = m_root;   // return root if node doesn't exist
+  if (!node) return nullptr;  // empty tree
   if (node->mm_data == value) return node;
   if (node->mm_data > value) return getNodeByValue(value, node->mm_left);
   return getNodeByValue(value, node->mm_right);
@@ -117,11 +106,11 @@ typename AVL_Tree<T>::Node* AVL_Tree<T>::getNodeByValue(T value, Node* node) {
 template <typename T>
 int AVL_Tree<T>::height(Node* node) {
   if (!node) return -1;
-  return node->height;
+  return node->mm_height;
 }
 
 template <typename T>
-void AVL_Tree<T>::rotate(Node* node) {
+typename AVL_Tree<T>::Node* AVL_Tree<T>::rotate(Node* node) {
   int balance = height(node->mm_left) - height(node->mm_right);
   // first check if it is left or right heavy
   if (balance > 1) {
@@ -130,51 +119,58 @@ void AVL_Tree<T>::rotate(Node* node) {
 
     if (leftBalance >= 0) {
       // left left case
-      rightRotate(node);
+      return rightRotate(node);
     } else {
       // left right case
-      leftRotate(node->mm_left);
-      rightRotate(node);
+      node->mm_left = leftRotate(node->mm_left);
+      return rightRotate(node);
     }
 
   } else if (balance < -1) {
     int rightBalance = height(node->mm_right->mm_left) - height(node->mm_right->mm_right);
     // check if right right or right left
 
-    if (rightBalance >= 0) {
+    if (rightBalance <= 0) {
       // right right case
-      leftRotate(node);
+      return leftRotate(node);
     } else {
       // right left case
-      rightRotate(node->mm_right);
-      leftRotate(node);
+      node->mm_right = rightRotate(node->mm_right);
+      return leftRotate(node);
     }
   }
+
+  return node; // no rotation needed, balance was maintained
 }
 
 template <typename T>
-void AVL_Tree<T>::leftRotate(Node* node) {
-
-  Node* rightChild = node->mm_right; // will be the new root
+typename AVL_Tree<T>::Node* AVL_Tree<T>::leftRotate(Node* node) {
+  Node* rightChild = node->mm_right;  // will be the new root
 
   // the left side rotation
   node->mm_right = rightChild->mm_left;
   rightChild->mm_left = node;
 
-  node = rightChild;
+  // adjust height
+  node->mm_height = std::max(height(node->mm_left), height(node->mm_right)) + 1;
+  rightChild->mm_height = std::max(height(rightChild->mm_left), height(rightChild->mm_right)) + 1;
 
+  return rightChild;
 }
 
 template <typename T>
-void AVL_Tree<T>::rightRotate(Node* node) {
-
-  Node* leftChild = node->mm_left; // will be the new root
+typename AVL_Tree<T>::Node* AVL_Tree<T>::rightRotate(Node* node) {
+  Node* leftChild = node->mm_left;  // will be the new root
 
   // the right side rotation
   node->mm_left = leftChild->mm_right;
   leftChild->mm_right = node;
 
-  node = leftChild;
+  // adjust height
+  node->mm_height = std::max(height(node->mm_left), height(node->mm_right)) + 1;
+  leftChild->mm_height = std::max(height(leftChild->mm_left), height(leftChild->mm_right)) + 1;
+
+  return leftChild;
 }
 
 /*--- private functions end ---*/
